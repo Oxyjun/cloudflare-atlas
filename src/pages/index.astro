@@ -42,458 +42,558 @@ const { Content } = await render(homepage);
 
 				<!-- Content from MDX file -->
 				<section class="content-section">
-			<div class="scroll-content grid square-grid">
-				<div class="content-panel">
-					<h1>Developer Documentation</h1>
-					<p>Dive into the details about Cloudflare's products.</p>
-				</div>
+					<div class="scroll-content grid square-grid">
+						<!-- Devdocs -->
+						<section class="content-panel" id="devdocs">
+							<h1>Developer Documentation</h1>
+							<p>Dive into the details about Cloudflare's products.</p>
+							<hr class="panel-divider" />
+							<ul>
+								<li>
+									<a href="https://developers.cloudflare.com/"
+										>Full developer documentation</a
+									>
+								</li>
+								<li>
+									<a href="https://developers.cloudflare.com/directory/"
+										>All products</a
+									>
+								</li>
+							</ul>
+						</section>
 
-				<div class="content-panel">
-					<h1>Blogs</h1>
-					<p>
-						Read everything from technical deep-dives powering our technology to
-						new ideas in the future of the internet.
-					</p>
-				</div>
+						<!-- Blogs -->
+						<section class="content-panel" id="blog">
+							<h1>Blogs</h1>
+							<p>
+								Read everything from technical deep-dives powering our
+								technology to new ideas in the future of the internet.
+							</p>
+							<hr class="panel-divider" />
+						</section>
 
-				<div class="content-panel">
-					<h1>Cloudflare Research</h1>
-					<p>Learn how we are planning to help build a better internet.</p>
-				</div>
+						<!-- Research -->
+						<section class="content-panel" id="research">
+							<h1>Cloudflare Research</h1>
+							<p>Learn how we are planning to help build a better internet.</p>
+							<hr class="panel-divider" />
+						</section>
 
-				<div class="content-panel">
-					<h1>Cloudflare University</h1>
-					<p>Take courses to earn Cloudflare certifications.</p>
+						<!-- University -->
+						<section class="content-panel" id="university">
+							<h1>Cloudflare University</h1>
+							<p>Take courses to earn Cloudflare certifications.</p>
+							<hr class="panel-divider" />
+						</section>
+					</div>
+				</section>
+
+				<!-- Right column: Hero image -->
+				<div class="image-column">
+					<div class="hero-image">
+						<div class="atlas-logo">
+							<img
+								src="/atlas-compass-outer.svg"
+								alt="Atlas Compass Outer"
+								class="compass-outer"
+							/>
+							<img
+								src="/atlas-compass-inner.svg"
+								alt="Atlas Book Inner"
+								class="compass-inner"
+							/>
+						</div>
+					</div>
 				</div>
 			</div>
-		</section>
-			</div>
 
-			<!-- Right column: Hero image -->
-			<div class="image-column">
-				<div class="hero-image">
-					<img
-						src={homepage.data.heroImage || "/atlas-logo-black.svg"}
-						alt="Cloudflare Atlas Logo"
-					/>
-				</div>
-			</div>
-		</div>
+			<script>
+				import {
+					animate,
+					splitText,
+					svg,
+					stagger,
+					random,
+					createTimeline,
+				} from "animejs";
 
-		<script>
-			import {
-				animate,
-				splitText,
-				svg,
-				stagger,
-				random,
-				createTimeline,
-			} from "animejs";
+				window.addEventListener("load", function () {
+					console.log("Page loaded");
 
-			window.addEventListener("load", function () {
-				console.log("Page loaded");
+					// General helper function to ensure all instances are processed
+					function forAllInstances(selector, callback) {
+						const elements = document.querySelectorAll(selector);
+						console.log(`Found ${elements.length} elements for: ${selector}`);
+						return Array.from(elements).map(callback);
+					}
 
-				// General helper function to ensure all instances are processed
-				function forAllInstances(selector, callback) {
-					const elements = document.querySelectorAll(selector);
-					console.log(`Found ${elements.length} elements for: ${selector}`);
-					return Array.from(elements).map(callback);
-				}
+					// Efficient helper - animates each element independently but simultaneously
+					function animateAllText(selector, splitOptions, animationConfig) {
+						const elements = document.querySelectorAll(selector);
 
-				// Efficient helper - animates each element independently but simultaneously
-				function animateAllText(selector, splitOptions, animationConfig) {
-					const elements = document.querySelectorAll(selector);
+						elements.forEach((element, index) => {
+							const { words } = splitText(element, splitOptions);
 
-					elements.forEach((element, index) => {
-						const { words } = splitText(element, splitOptions);
+							// Create independent animation for each paragraph
+							// Add a base delay offset for each paragraph but keep same stagger direction
+							const baseDelay = index * 200; // Delay each paragraph by 200ms
 
-						// Create independent animation for each paragraph
-						// Add a base delay offset for each paragraph but keep same stagger direction
-						const baseDelay = index * 200; // Delay each paragraph by 200ms
-
-						animate(words, {
-							...animationConfig,
-							delay: (el, i) =>
-								baseDelay + i * (animationConfig.delay?.stagger || 50),
+							animate(words, {
+								...animationConfig,
+								delay: (el, i) =>
+									baseDelay + i * (animationConfig.delay?.stagger || 50),
+							});
 						});
-					});
-				}
-
-				// Animate text by line codeblock - simple approach for all paragraphs
-				animateAllText(
-					".content-panel p",
-					{ words: { wrap: "clip" } },
-					{
-						y: [
-							{ to: ["100%", "0%"] },
-							{ to: "-100%", delay: 1500, ease: "in(3)" },
-						],
-						duration: 750,
-						ease: "out(3)",
-						delay: { stagger: 50 },
-						loop: true,
-						loopDelay: 100,
-					},
-				);
-
-				// Logo rotation on scroll
-				window.addEventListener("scroll", function () {
-					const scrolled = window.pageYOffset;
-					const rotation = scrolled * -0.1;
-
-					const logoImg = document.querySelector(".hero-image img");
-					if (logoImg) {
-						logoImg.style.transform = `rotate(${rotation}deg)`;
-					}
-				});
-
-				// Create custom scrollbar with ruler markings
-				function createScrollbarMarkings() {
-					const rulerMarkings = document.querySelector('.ruler-markings');
-					console.log('Ruler markings container:', rulerMarkings);
-					
-					if (!rulerMarkings) {
-						console.error('Could not find .ruler-markings element');
-						return;
-					}
-					
-					// Generate ruler marks (every 2% of height, every 5th is longer)
-					for (let i = 1; i <= 49; i++) {
-						const mark = document.createElement('div');
-						mark.className = i % 5 === 0 ? 'ruler-mark long' : 'ruler-mark short';
-						mark.style.top = `${i * 2}%`;
-						mark.style.backgroundColor = '#ffffff';
-						mark.style.position = 'absolute';
-						mark.style.left = '50%';
-						mark.style.transform = 'translateX(-50%)';
-						mark.style.height = i % 5 === 0 ? '3px' : '1.5px';
-						mark.style.width = i % 5 === 0 ? '20px' : '12px';
-						console.log(`Created mark ${i} at ${i * 2}%`, mark);
-						rulerMarkings.appendChild(mark);
-					}
-					
-					console.log('Total marks created:', rulerMarkings.children.length);
-				}
-				
-				// Add a small delay to ensure DOM is ready
-				setTimeout(createScrollbarMarkings, 100);
-
-				// Handle scroll indicator movement and panel fade
-				function updateScrollEffects() {
-					const scrolled = window.pageYOffset;
-					const maxScroll = document.body.scrollHeight - window.innerHeight;
-					const scrollProgress = Math.min(scrolled / maxScroll, 1);
-					
-					// Move the scroll indicator
-					const indicator = document.querySelector('.scroll-indicator');
-					if (indicator) {
-						// Position between 2% and 96% of the scrollbar height
-						const indicatorPosition = 2 + (scrollProgress * 94);
-						indicator.style.top = `${indicatorPosition}%`;
 					}
 
-					// Update panel opacity based on visibility
-					const panels = document.querySelectorAll('.content-panel');
-					const viewportHeight = window.innerHeight;
-					
-					panels.forEach(panel => {
-						const rect = panel.getBoundingClientRect();
-						const panelTop = rect.top;
-						const panelBottom = rect.bottom;
-						const panelHeight = rect.height;
-						
-						let visibilityRatio = 0;
-						
-						if (panelBottom > 0 && panelTop < viewportHeight) {
-							// Panel is at least partially visible
-							const visibleTop = Math.max(0, panelTop);
-							const visibleBottom = Math.min(viewportHeight, panelBottom);
-							const visibleHeight = visibleBottom - visibleTop;
-							visibilityRatio = visibleHeight / panelHeight;
+					// Animate text by line codeblock - simple approach for all paragraphs
+					animateAllText(
+						".content-panel p",
+						{ words: { wrap: "clip" } },
+						{
+							y: [
+								{ to: ["100%", "0%"] },
+								{ to: "-100%", delay: 1500, ease: "in(3)" },
+							],
+							duration: 750,
+							ease: "out(3)",
+							delay: { stagger: 50 },
+							loop: true,
+							loopDelay: 100,
+						},
+					);
+
+					// Compass outer rotation on scroll
+					window.addEventListener("scroll", function () {
+						const scrolled = window.pageYOffset;
+						const rotation = scrolled * -0.1;
+
+						const compassOuter = document.querySelector(".compass-outer");
+						if (compassOuter) {
+							compassOuter.style.transform = `rotate(${rotation}deg)`;
 						}
-						
-						// Map visibility ratio to opacity (0.2 to 1.0)
-						const opacity = 0.2 + (visibilityRatio * 0.8);
-						panel.style.opacity = opacity.toString();
 					});
+
+					// Create custom scrollbar with ruler markings
+					function createScrollbarMarkings() {
+						const rulerMarkings = document.querySelector(".ruler-markings");
+						console.log("Ruler markings container:", rulerMarkings);
+
+						if (!rulerMarkings) {
+							console.error("Could not find .ruler-markings element");
+							return;
+						}
+
+						// Generate ruler marks (every 2% of height, every 5th is longer)
+						for (let i = 1; i <= 49; i++) {
+							const mark = document.createElement("div");
+							mark.className =
+								i % 5 === 0 ? "ruler-mark long" : "ruler-mark short";
+							mark.style.top = `${i * 2}%`;
+							mark.style.backgroundColor = "#ffffff";
+							mark.style.position = "absolute";
+							mark.style.left = "50%";
+							mark.style.transform = "translateX(-50%)";
+							mark.style.height = i % 5 === 0 ? "3px" : "1.5px";
+							mark.style.width = i % 5 === 0 ? "20px" : "12px";
+							console.log(`Created mark ${i} at ${i * 2}%`, mark);
+							rulerMarkings.appendChild(mark);
+						}
+
+						console.log("Total marks created:", rulerMarkings.children.length);
+					}
+
+					// Add a small delay to ensure DOM is ready
+					setTimeout(createScrollbarMarkings, 100);
+
+					// Handle scroll indicator movement and panel fade
+					function updateScrollEffects() {
+						const scrolled = window.pageYOffset;
+						const maxScroll = document.body.scrollHeight - window.innerHeight;
+						const scrollProgress = Math.min(scrolled / maxScroll, 1);
+
+						// Move the scroll indicator
+						const indicator = document.querySelector(".scroll-indicator");
+						if (indicator) {
+							// Position between 2% and 96% of the scrollbar height
+							const indicatorPosition = 2 + scrollProgress * 94;
+							indicator.style.top = `${indicatorPosition}%`;
+						}
+
+						// Update panel opacity based on visibility
+						const panels = document.querySelectorAll(".content-panel");
+						const viewportHeight = window.innerHeight;
+
+						panels.forEach((panel) => {
+							const rect = panel.getBoundingClientRect();
+							const panelTop = rect.top;
+							const panelBottom = rect.bottom;
+							const panelHeight = rect.height;
+							const viewportMidpoint = viewportHeight / 2;
+
+							let animationProgress = 0;
+							let isFullyVisible = false;
+
+							if (panelBottom > 0 && panelTop < viewportHeight) {
+								// Calculate how close the panel center is to viewport midpoint
+								const panelCenter = panelTop + panelHeight / 2;
+
+								if (panelCenter > viewportMidpoint) {
+									// Panel center is below midpoint - gradual fade based on distance
+									const distanceFromMid = panelCenter - viewportMidpoint;
+									const maxDistance = viewportHeight - viewportMidpoint;
+									animationProgress = Math.max(
+										0,
+										1 - distanceFromMid / maxDistance,
+									);
+								} else {
+									// Panel center is above midpoint - fully visible
+									animationProgress = 1;
+									isFullyVisible = true;
+								}
+							}
+
+							// Map animation progress to opacity (0.2 to 1.0)
+							const opacity = 0.2 + animationProgress * 0.8;
+							panel.style.opacity = opacity.toString();
+
+							// Animate horizontal line from left to right
+							const divider = panel.querySelector(".panel-divider");
+							if (divider) {
+								const lineWidth = animationProgress * 100;
+								divider.style.width = `${lineWidth}%`;
+							}
+
+							// Handle link animations
+							const links = panel.querySelectorAll("a");
+
+							// Check if panel is off screen to reset animation
+							if (panelTop > viewportHeight || panelBottom < 0) {
+								panel.dataset.linksAnimated = "false";
+								links.forEach((link) => {
+									link.classList.remove("animate-in");
+								});
+							}
+
+							// Trigger staggered link animation when panel is fully visible
+							if (isFullyVisible && panel.dataset.linksAnimated !== "true") {
+								panel.dataset.linksAnimated = "true";
+								links.forEach((link, index) => {
+									setTimeout(() => {
+										link.classList.add("animate-in");
+									}, index * 150); // 150ms stagger delay
+								});
+							}
+						});
+					}
+
+					window.addEventListener("scroll", updateScrollEffects);
+
+					// Initial call to set proper opacity on load
+					setTimeout(updateScrollEffects, 100);
+				});
+			</script>
+
+			<style>
+				:root {
+					overscroll-behavior: none;
+					--primary-color: #333;
+					--accent-color: #066eb9;
+					--glass-bg: rgba(255, 255, 255, 0.15);
+					--glass-border: rgba(255, 255, 255, 0.2);
+					--glass-divider: rgba(51, 51, 51, 0.4);
 				}
 
-				window.addEventListener("scroll", updateScrollEffects);
-				
-				// Initial call to set proper opacity on load
-				setTimeout(updateScrollEffects, 100);
-			});
-		</script>
+				/* Base & Scrollbars */
+				html,
+				body,
+				* {
+					scrollbar-width: none;
+					-ms-overflow-style: none;
+				}
+				html::-webkit-scrollbar,
+				body::-webkit-scrollbar,
+				*::-webkit-scrollbar {
+					display: none;
+				}
 
-		<style>
-			:root {
-				overscroll-behavior: none;
-			}
+				body {
+					margin: 0;
+					padding: 0;
+					min-height: 100vh;
+					overflow-x: hidden;
+					background: linear-gradient(to bottom, var(--accent-color), #bbdefb);
+					background-attachment: fixed;
+				}
 
-			/* Hide scrollbars completely */
-			html {
-				scrollbar-width: none; /* Firefox */
-				-ms-overflow-style: none; /* IE and Edge */
-			}
+				/* Layout */
+				.page-layout {
+					display: flex;
+					width: 100vw;
+					min-height: 100vh;
+					overflow-x: hidden;
+				}
 
-			html::-webkit-scrollbar {
-				display: none;
-			}
+				.scrollbar-column {
+					flex: 0 0 80px;
+				}
+				.content-column {
+					flex: 1;
+					min-height: 100vh;
+					max-width: calc(50vw - 80px);
+					overflow: hidden;
+				}
+				.image-column {
+					flex: 0 0 50vw;
+				}
 
-			* {
-				scrollbar-width: none; /* Firefox */
-				-ms-overflow-style: none; /* IE and Edge */
-			}
+				/* Custom Scrollbar */
+				.custom-scrollbar {
+					position: fixed;
+					left: 1.5rem;
+					top: 5vh;
+					height: 90vh;
+					width: 30px;
+					z-index: 1000;
+					pointer-events: none;
+				}
 
-			*::-webkit-scrollbar {
-				display: none;
-			}
+				.scrollbar-track {
+					width: 100%;
+					height: 100%;
+					background: rgba(255, 255, 255, 0.1);
+					border-radius: 15px;
+					border: 1px solid var(--glass-border);
+					backdrop-filter: blur(5px);
+				}
 
-			/* Three-column page layout */
-			.page-layout {
-				display: flex;
-				width: 100vw;
-				max-width: 100vw;
-				min-height: 100vh;
-				overflow-x: hidden;
-			}
+				.ruler-markings {
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					pointer-events: none;
+				}
 
-			.scrollbar-column {
-				flex: 0 0 80px;
-				position: relative;
-			}
+				.ruler-mark {
+					position: absolute;
+					left: 50%;
+					transform: translateX(-50%);
+					height: 1.5px;
+					background: #ffffff;
+				}
+				.ruler-mark.short {
+					width: 12px;
+				}
+				.ruler-mark.long {
+					width: 20px;
+					height: 3px;
+				}
 
-			.content-column {
-				flex: 1;
-				min-height: 100vh;
-				max-width: calc(50vw - 80px);
-				overflow: hidden;
-			}
+				.scroll-indicator {
+					position: absolute;
+					left: 50%;
+					transform: translateX(-50%);
+					width: 20px;
+					height: 3px;
+					background: #ff4444;
+					border-radius: 2px;
+					box-shadow: 0 0 8px rgba(255, 68, 68, 0.5);
+					transition: top 0.1s ease-out;
+				}
 
-			.image-column {
-				flex: 0 0 50vw;
-				position: relative;
-			}
+				/* Hero Section */
+				main {
+					height: 100vh;
+					display: flex;
+					align-items: center;
+				}
 
-			/* Custom vertical scrollbar */
-			.custom-scrollbar {
-				position: fixed;
-				left: 1.5rem;
-				top: 5vh;
-				height: 90vh;
-				width: 30px;
-				z-index: 1000;
-				pointer-events: none;
-			}
-
-			.scrollbar-track {
-				position: relative;
-				width: 100%;
-				height: 100%;
-				background: rgba(255, 255, 255, 0.1);
-				border-radius: 15px;
-				border: 1px solid rgba(255, 255, 255, 0.2);
-				backdrop-filter: blur(5px);
-			}
-
-			.ruler-markings {
-				position: absolute;
-				width: 100%;
-				height: 100%;
-				pointer-events: none;
-			}
-
-			.ruler-mark {
-				position: absolute;
-				left: 50%;
-				transform: translateX(-50%);
-				height: 1.5px;
-				background: #ffffff;
-			}
-
-			.ruler-mark.short {
-				width: 12px;
-			}
-
-			.ruler-mark.long {
-				width: 20px;
-				height: 3px;
-			}
-
-			.scroll-indicator {
-				position: absolute;
-				left: 50%;
-				transform: translateX(-50%);
-				width: 20px;
-				height: 3px;
-				background: #ff4444;
-				border-radius: 2px;
-				box-shadow: 0 0 8px rgba(255, 68, 68, 0.5);
-				transition: top 0.1s ease-out;
-			}
-			body {
-				margin: 0;
-				padding: 0;
-				min-height: 100vh;
-				overflow-x: hidden;
-				background: linear-gradient(to bottom, #066eb9, #bbdefb);
-				background-attachment: fixed;
-				/* Hide default scrollbar */
-				scrollbar-width: none; /* Firefox */
-				-ms-overflow-style: none; /* IE and Edge */
-			}
-
-			/* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
-			body::-webkit-scrollbar {
-				display: none;
-			}
-
-			main {
-				height: 100vh;
-				display: flex;
-				align-items: center;
-				background: transparent;
-			}
-			
-			.hero-container {
-				width: 100%;
-				padding: 0;
-				box-sizing: border-box;
-			}
-
-			.hero-text {
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-				text-align: left;
-				padding: 2rem;
-				box-sizing: border-box;
-				width: 100%;
-				max-width: 100%;
-			}
-
-			.hero-title {
-				margin: 0 0 1rem 0;
-				width: 100%;
-			}
-
-			.title-word {
-				font-size: clamp(3rem, 8vw, 6rem);
-				font-weight: bold;
-				line-height: 1.1;
-				color: #333;
-				display: block;
-				white-space: normal;
-				word-wrap: break-word;
-				max-width: 100%;
-			}
-
-			.hero-subtitle {
-				font-size: clamp(1.2rem, 3vw, 2rem);
-				margin: 0;
-				color: #333;
-				font-weight: 300;
-			}
-
-			.hero-image {
-				position: fixed;
-				top: 0;
-				right: 0;
-				width: 50vw;
-				height: 100vh;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				z-index: 1;
-				background: linear-gradient(to bottom, #066eb9, #bbdefb);
-			}
-
-			.hero-image img {
-				width: 65%;
-				height: auto;
-				max-width: 100%;
-				object-fit: contain;
-			}
-
-			.content-section {
-				color: #333;
-				font-family: inherit;
-				background: transparent;
-				padding: 2rem;
-				width: 100%;
-				max-width: 100%;
-				box-sizing: border-box;
-			}
-
-			.content-panel {
-				width: calc(100% - 4rem);
-				max-width: calc(100% - 4rem);
-				margin: 75vh 0 0 0;
-				background: rgba(255, 255, 255, 0.15);
-				backdrop-filter: blur(10px);
-				border: 1px solid rgba(255, 255, 255, 0.2);
-				border-radius: 20px;
-				padding: 2rem;
-				box-sizing: border-box;
-				word-wrap: break-word;
-				overflow-wrap: break-word;
-				opacity: 0.2;
-			}
-
-			.content-panel:first-child {
-				margin-top: 0;
-			}
-
-			.content-panel h1 {
-				font-size: clamp(2rem, 5vw, 2.5rem);
-				margin: 0 0 1.5rem 0;
-				font-weight: bold;
-				color: #333;
-				word-wrap: break-word;
-				max-width: 100%;
-			}
-
-			.content-panel h2 {
-				font-size: clamp(1.5rem, 4vw, 2rem);
-				margin: 2rem 0 1rem 0;
-				font-weight: bold;
-				color: #333;
-				word-wrap: break-word;
-				max-width: 100%;
-			}
-
-			.content-panel p {
-				font-size: clamp(1rem, 3vw, 1.2rem);
-				line-height: 1.6;
-				margin: 0;
-				color: #333;
-				word-wrap: break-word;
-				max-width: 100%;
-			}
-
-			@media (max-width: 768px) {
-				.hero-container {
-					flex-direction: column;
-					text-align: left;
-					min-height: auto;
-					padding: 1rem;
+				.hero-container,
+				.hero-text {
+					width: 100%;
+					box-sizing: border-box;
 				}
 
 				.hero-text {
-					order: 1;
-					text-align: left;
-				}
-
-				.hero-image {
-					order: 2;
-					max-width: 80%;
-				}
-
-				.content-section {
-					width: 100% !important;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
 					padding: 2rem;
 				}
-			}
-		</style>
+
+				.hero-title {
+					margin: 0 0 1rem 0;
+				}
+
+				.title-word,
+				.hero-subtitle {
+					color: var(--primary-color);
+					word-wrap: break-word;
+					max-width: 100%;
+				}
+
+				.title-word {
+					font-size: clamp(3rem, 8vw, 6rem);
+					font-weight: bold;
+					line-height: 1.1;
+					display: block;
+				}
+
+				.hero-subtitle {
+					font-size: clamp(1.2rem, 3vw, 2rem);
+					margin: 0;
+					font-weight: 300;
+				}
+
+				/* Hero Image & Atlas Logo */
+				.hero-image {
+					position: fixed;
+					top: 0;
+					right: 0;
+					width: 50vw;
+					height: 100vh;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					z-index: 1;
+					background: linear-gradient(to bottom, var(--accent-color), #bbdefb);
+				}
+
+				.atlas-logo {
+					position: relative;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					width: 160%;
+				}
+
+				.compass-outer {
+					width: 80%;
+					transform-origin: center center;
+				}
+
+				.compass-inner {
+					position: absolute;
+					width: 160px !important;
+					z-index: 2;
+				}
+
+				/* Content Panels */
+				.content-section {
+					color: var(--primary-color);
+					padding: 2rem;
+					width: 100%;
+					box-sizing: border-box;
+				}
+
+				.content-panel {
+					width: 70%;
+					margin: 75vh 0 0 0;
+					background: var(--glass-bg);
+					backdrop-filter: blur(10px);
+					border: 1px solid var(--glass-border);
+					border-radius: 20px;
+					padding: 2rem;
+					box-sizing: border-box;
+					word-wrap: break-word;
+					opacity: 0.2;
+				}
+				.content-panel:first-child {
+					margin-top: 0;
+				}
+
+				/* Content Panel Elements */
+				.content-panel h1,
+				.content-panel h2,
+				.content-panel p,
+				.content-panel a {
+					color: var(--primary-color);
+					word-wrap: break-word;
+					max-width: 100%;
+				}
+
+				.content-panel h1 {
+					font-size: clamp(2rem, 5vw, 2.5rem);
+					margin: 0 0 1.5rem 0;
+					font-weight: bold;
+				}
+
+				.content-panel h2 {
+					font-size: clamp(1.5rem, 4vw, 2rem);
+					margin: 2rem 0 1rem 0;
+					font-weight: bold;
+				}
+
+				.content-panel p {
+					font-size: clamp(1rem, 3vw, 1.2rem);
+					line-height: 1.6;
+					margin: 0;
+				}
+
+				.content-panel ul {
+					list-style: none;
+					padding: 0;
+					margin: 0.25rem 0 0 0;
+				}
+
+				.content-panel li {
+					margin: 0.5rem 0;
+				}
+
+				.content-panel a {
+					font-size: clamp(0.9rem, 2.5vw, 1rem);
+					text-decoration: none;
+					transition: color 0.3s ease;
+					line-height: 1.2;
+					display: block;
+					transform: translateX(-2rem);
+					opacity: 0;
+					transition:
+						transform 0.4s ease-out,
+						opacity 0.4s ease-out,
+						color 0.3s ease;
+				}
+
+				.content-panel a.animate-in {
+					transform: translateX(0);
+					opacity: 1;
+				}
+				.content-panel a::before {
+					content: "→";
+					margin-right: 0.5rem;
+				}
+				.content-panel a:hover {
+					color: #0051c3;
+				}
+
+				.panel-divider {
+					border: none;
+					height: 3px;
+					background: var(--glass-divider);
+					margin: 1.5rem 0 0 0;
+					width: 0%;
+					transition: none;
+				}
+
+				/* Mobile */
+				@media (max-width: 768px) {
+					.hero-container {
+						flex-direction: column;
+						padding: 1rem;
+					}
+					.hero-text {
+						order: 1;
+					}
+					.hero-image {
+						order: 2;
+						max-width: 80%;
+					}
+					.content-section {
+						width: 100% !important;
+						padding: 2rem;
+					}
+				}
+			</style>
+		</div>
 	</body>
 </html>
