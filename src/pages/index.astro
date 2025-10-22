@@ -178,8 +178,8 @@ const { Content } = await render(homepage);
 				// Add a small delay to ensure DOM is ready
 				setTimeout(createScrollbarMarkings, 100);
 
-				// Handle scroll indicator movement
-				window.addEventListener("scroll", function () {
+				// Handle scroll indicator movement and panel fade
+				function updateScrollEffects() {
 					const scrolled = window.pageYOffset;
 					const maxScroll = document.body.scrollHeight - window.innerHeight;
 					const scrollProgress = Math.min(scrolled / maxScroll, 1);
@@ -191,7 +191,37 @@ const { Content } = await render(homepage);
 						const indicatorPosition = 2 + (scrollProgress * 94);
 						indicator.style.top = `${indicatorPosition}%`;
 					}
-				});
+
+					// Update panel opacity based on visibility
+					const panels = document.querySelectorAll('.content-panel');
+					const viewportHeight = window.innerHeight;
+					
+					panels.forEach(panel => {
+						const rect = panel.getBoundingClientRect();
+						const panelTop = rect.top;
+						const panelBottom = rect.bottom;
+						const panelHeight = rect.height;
+						
+						let visibilityRatio = 0;
+						
+						if (panelBottom > 0 && panelTop < viewportHeight) {
+							// Panel is at least partially visible
+							const visibleTop = Math.max(0, panelTop);
+							const visibleBottom = Math.min(viewportHeight, panelBottom);
+							const visibleHeight = visibleBottom - visibleTop;
+							visibilityRatio = visibleHeight / panelHeight;
+						}
+						
+						// Map visibility ratio to opacity (0.2 to 1.0)
+						const opacity = 0.2 + (visibilityRatio * 0.8);
+						panel.style.opacity = opacity.toString();
+					});
+				}
+
+				window.addEventListener("scroll", updateScrollEffects);
+				
+				// Initial call to set proper opacity on load
+				setTimeout(updateScrollEffects, 100);
 			});
 		</script>
 
@@ -407,6 +437,7 @@ const { Content } = await render(homepage);
 				box-sizing: border-box;
 				word-wrap: break-word;
 				overflow-wrap: break-word;
+				opacity: 0.2;
 			}
 
 			.content-panel:first-child {
