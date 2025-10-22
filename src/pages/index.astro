@@ -15,15 +15,62 @@ const { Content } = await render(homepage);
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
-		<main>
-			<div class="hero-container">
-				<div class="hero-text">
-					<div class="hero-title">
-						<div class="title-word">Cloudflare</div>
-						<div class="title-word">Atlas</div>
+		<div class="page-layout">
+			<!-- Left column: Custom scrollbar -->
+			<div class="scrollbar-column">
+				<div class="custom-scrollbar">
+					<div class="scrollbar-track">
+						<div class="ruler-markings"></div>
+						<div class="scroll-indicator"></div>
 					</div>
-					<p class="hero-subtitle">{homepage.data.description}</p>
 				</div>
+			</div>
+
+			<!-- Middle column: Content -->
+			<div class="content-column">
+				<main>
+					<div class="hero-container">
+						<div class="hero-text">
+							<div class="hero-title">
+								<div class="title-word">Cloudflare</div>
+								<div class="title-word">Atlas</div>
+							</div>
+							<p class="hero-subtitle">{homepage.data.description}</p>
+						</div>
+					</div>
+				</main>
+
+				<!-- Content from MDX file -->
+				<section class="content-section">
+			<div class="scroll-content grid square-grid">
+				<div class="content-panel">
+					<h1>Developer Documentation</h1>
+					<p>Dive into the details about Cloudflare's products.</p>
+				</div>
+
+				<div class="content-panel">
+					<h1>Blogs</h1>
+					<p>
+						Read everything from technical deep-dives powering our technology to
+						new ideas in the future of the internet.
+					</p>
+				</div>
+
+				<div class="content-panel">
+					<h1>Cloudflare Research</h1>
+					<p>Learn how we are planning to help build a better internet.</p>
+				</div>
+
+				<div class="content-panel">
+					<h1>Cloudflare University</h1>
+					<p>Take courses to earn Cloudflare certifications.</p>
+				</div>
+			</div>
+		</section>
+			</div>
+
+			<!-- Right column: Hero image -->
+			<div class="image-column">
 				<div class="hero-image">
 					<img
 						src={homepage.data.heroImage || "/atlas-logo-black.svg"}
@@ -31,36 +78,7 @@ const { Content } = await render(homepage);
 					/>
 				</div>
 			</div>
-		</main>
-
-		<!-- Content from MDX file -->
-		<section
-			class="content-section"
-			style="width: 50%; padding: 4rem; min-height: 100vh;"
-		>
-			<div class="content-panel">
-				<h1>Developer Documentation</h1>
-				<p>Dive into the details about Cloudflare's products.</p>
-			</div>
-
-			<div class="content-panel">
-				<h1>Blogs</h1>
-				<p>
-					Read everything from technical deep-dives powering our technology to
-					new ideas in the future of the internet.
-				</p>
-			</div>
-
-			<div class="content-panel">
-				<h1>Cloudflare Research</h1>
-				<p>Learn how we are planning to help build a better internet.</p>
-			</div>
-
-			<div class="content-panel">
-				<h1>Cloudflare University</h1>
-				<p>Take courses to earn Cloudflare certifications.</p>
-			</div>
-		</section>
+		</div>
 
 		<script>
 			import {
@@ -128,12 +146,160 @@ const { Content } = await render(homepage);
 						logoImg.style.transform = `rotate(${rotation}deg)`;
 					}
 				});
+
+				// Create custom scrollbar with ruler markings
+				function createScrollbarMarkings() {
+					const rulerMarkings = document.querySelector('.ruler-markings');
+					console.log('Ruler markings container:', rulerMarkings);
+					
+					if (!rulerMarkings) {
+						console.error('Could not find .ruler-markings element');
+						return;
+					}
+					
+					// Generate ruler marks (every 2% of height, every 5th is longer)
+					for (let i = 1; i <= 49; i++) {
+						const mark = document.createElement('div');
+						mark.className = i % 5 === 0 ? 'ruler-mark long' : 'ruler-mark short';
+						mark.style.top = `${i * 2}%`;
+						mark.style.backgroundColor = '#ffffff';
+						mark.style.position = 'absolute';
+						mark.style.left = '50%';
+						mark.style.transform = 'translateX(-50%)';
+						mark.style.height = i % 5 === 0 ? '3px' : '1.5px';
+						mark.style.width = i % 5 === 0 ? '20px' : '12px';
+						console.log(`Created mark ${i} at ${i * 2}%`, mark);
+						rulerMarkings.appendChild(mark);
+					}
+					
+					console.log('Total marks created:', rulerMarkings.children.length);
+				}
+				
+				// Add a small delay to ensure DOM is ready
+				setTimeout(createScrollbarMarkings, 100);
+
+				// Handle scroll indicator movement
+				window.addEventListener("scroll", function () {
+					const scrolled = window.pageYOffset;
+					const maxScroll = document.body.scrollHeight - window.innerHeight;
+					const scrollProgress = Math.min(scrolled / maxScroll, 1);
+					
+					// Move the scroll indicator
+					const indicator = document.querySelector('.scroll-indicator');
+					if (indicator) {
+						// Position between 2% and 96% of the scrollbar height
+						const indicatorPosition = 2 + (scrollProgress * 94);
+						indicator.style.top = `${indicatorPosition}%`;
+					}
+				});
 			});
 		</script>
 
 		<style>
 			:root {
 				overscroll-behavior: none;
+			}
+
+			/* Hide scrollbars completely */
+			html {
+				scrollbar-width: none; /* Firefox */
+				-ms-overflow-style: none; /* IE and Edge */
+			}
+
+			html::-webkit-scrollbar {
+				display: none;
+			}
+
+			* {
+				scrollbar-width: none; /* Firefox */
+				-ms-overflow-style: none; /* IE and Edge */
+			}
+
+			*::-webkit-scrollbar {
+				display: none;
+			}
+
+			/* Three-column page layout */
+			.page-layout {
+				display: flex;
+				width: 100vw;
+				max-width: 100vw;
+				min-height: 100vh;
+				overflow-x: hidden;
+			}
+
+			.scrollbar-column {
+				flex: 0 0 80px;
+				position: relative;
+			}
+
+			.content-column {
+				flex: 1;
+				min-height: 100vh;
+				max-width: calc(50vw - 80px);
+				overflow: hidden;
+			}
+
+			.image-column {
+				flex: 0 0 50vw;
+				position: relative;
+			}
+
+			/* Custom vertical scrollbar */
+			.custom-scrollbar {
+				position: fixed;
+				left: 1.5rem;
+				top: 5vh;
+				height: 90vh;
+				width: 30px;
+				z-index: 1000;
+				pointer-events: none;
+			}
+
+			.scrollbar-track {
+				position: relative;
+				width: 100%;
+				height: 100%;
+				background: rgba(255, 255, 255, 0.1);
+				border-radius: 15px;
+				border: 1px solid rgba(255, 255, 255, 0.2);
+				backdrop-filter: blur(5px);
+			}
+
+			.ruler-markings {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				pointer-events: none;
+			}
+
+			.ruler-mark {
+				position: absolute;
+				left: 50%;
+				transform: translateX(-50%);
+				height: 1.5px;
+				background: #ffffff;
+			}
+
+			.ruler-mark.short {
+				width: 12px;
+			}
+
+			.ruler-mark.long {
+				width: 20px;
+				height: 3px;
+			}
+
+			.scroll-indicator {
+				position: absolute;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 20px;
+				height: 3px;
+				background: #ff4444;
+				border-radius: 2px;
+				box-shadow: 0 0 8px rgba(255, 68, 68, 0.5);
+				transition: top 0.1s ease-out;
 			}
 			body {
 				margin: 0;
@@ -142,19 +308,25 @@ const { Content } = await render(homepage);
 				overflow-x: hidden;
 				background: linear-gradient(to bottom, #066eb9, #bbdefb);
 				background-attachment: fixed;
+				/* Hide default scrollbar */
+				scrollbar-width: none; /* Firefox */
+				-ms-overflow-style: none; /* IE and Edge */
+			}
+
+			/* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+			body::-webkit-scrollbar {
+				display: none;
 			}
 
 			main {
-				height: 100%;
-				width: 100%;
-				max-width: 100vw;
-				overflow-x: hidden;
+				height: 100vh;
+				display: flex;
+				align-items: center;
 				background: transparent;
 			}
+			
 			.hero-container {
-				display: block;
-				min-height: 100vh;
-				width: 50%;
+				width: 100%;
 				padding: 0;
 				box-sizing: border-box;
 			}
@@ -163,23 +335,27 @@ const { Content } = await render(homepage);
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
-				min-height: 100vh;
 				text-align: left;
-				padding: 4rem;
+				padding: 2rem;
 				box-sizing: border-box;
+				width: 100%;
+				max-width: 100%;
 			}
 
 			.hero-title {
 				margin: 0 0 1rem 0;
+				width: 100%;
 			}
 
 			.title-word {
-				font-size: clamp(4.5rem, 11vw, 9rem);
+				font-size: clamp(3rem, 8vw, 6rem);
 				font-weight: bold;
 				line-height: 1.1;
 				color: #333;
 				display: block;
-				white-space: nowrap;
+				white-space: normal;
+				word-wrap: break-word;
+				max-width: 100%;
 			}
 
 			.hero-subtitle {
@@ -193,7 +369,7 @@ const { Content } = await render(homepage);
 				position: fixed;
 				top: 0;
 				right: 0;
-				width: 50%;
+				width: 50vw;
 				height: 100vh;
 				display: flex;
 				justify-content: center;
@@ -213,17 +389,24 @@ const { Content } = await render(homepage);
 				color: #333;
 				font-family: inherit;
 				background: transparent;
+				padding: 2rem;
+				width: 100%;
+				max-width: 100%;
+				box-sizing: border-box;
 			}
 
 			.content-panel {
-				width: 50%;
+				width: calc(100% - 4rem);
+				max-width: calc(100% - 4rem);
 				margin: 75vh 0 0 0;
 				background: rgba(255, 255, 255, 0.15);
 				backdrop-filter: blur(10px);
 				border: 1px solid rgba(255, 255, 255, 0.2);
 				border-radius: 20px;
-				padding: 2.5rem;
-				box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+				padding: 2rem;
+				box-sizing: border-box;
+				word-wrap: break-word;
+				overflow-wrap: break-word;
 			}
 
 			.content-panel:first-child {
@@ -231,24 +414,30 @@ const { Content } = await render(homepage);
 			}
 
 			.content-panel h1 {
-				font-size: 3rem;
+				font-size: clamp(2rem, 5vw, 2.5rem);
 				margin: 0 0 1.5rem 0;
 				font-weight: bold;
 				color: #333;
+				word-wrap: break-word;
+				max-width: 100%;
 			}
 
 			.content-panel h2 {
-				font-size: 2.5rem;
+				font-size: clamp(1.5rem, 4vw, 2rem);
 				margin: 2rem 0 1rem 0;
 				font-weight: bold;
 				color: #333;
+				word-wrap: break-word;
+				max-width: 100%;
 			}
 
 			.content-panel p {
-				font-size: 1.2rem;
+				font-size: clamp(1rem, 3vw, 1.2rem);
 				line-height: 1.6;
 				margin: 0;
 				color: #333;
+				word-wrap: break-word;
+				max-width: 100%;
 			}
 
 			@media (max-width: 768px) {
