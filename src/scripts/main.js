@@ -50,11 +50,16 @@ function updateScrollEffects() {
 	// Get viewport dimensions
 	const viewportHeight = window.innerHeight;
 	
-	// Update progress system and get progress data
+	// Update progress system and get progress data (tracks content panel journey)
 	const progressData = updateProgressSystem(viewportHeight);
 	
-	// Update scrollbar with progress
-	updateScrollbar(progressData.smoothProgress);
+	// Calculate actual scroll progress for scrollbar (entire document including all content)
+	const scrollPosition = window.pageYOffset;
+	const documentHeight = document.documentElement.scrollHeight - viewportHeight;
+	const actualScrollProgress = Math.min(1, Math.max(0, scrollPosition / documentHeight));
+	
+	// Update scrollbar with document scroll progress (different from content panel progress)
+	updateScrollbar(actualScrollProgress);
 	
 	// Update panel animations
 	updatePanelAnimations(viewportHeight);

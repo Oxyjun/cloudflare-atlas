@@ -187,7 +187,7 @@ const { Content } = await render(homepage);
 	⚡ JAVASCRIPT BEHAVIOR (src/scripts/):
 	├── main.js ← Central coordinator and app initialization
 	├── textAnimations.js ← SplitText word-by-word animations
-	├── customScrollbar.js ← Left sidebar scrollbar and ruler markings
+	├── customScrollbar.js ← Section-based scrollbar with equidistant clickable navigation
 	├── progressSystem.js ← Circular progress ring and compass rotation
 	├── panelAnimations.js ← Content panel fade/slide effects
 	└── scrollBehavior.js ← Logo movement and background scrolling
@@ -306,7 +306,7 @@ const { Content } = await render(homepage);
 				position: absolute;
 				width: 100%;
 				height: 100%;
-				pointer-events: none;
+				pointer-events: none; /* Disable for container */
 			}
 
 			.ruler-mark {
@@ -315,6 +315,7 @@ const { Content } = await render(homepage);
 				transform: translateX(-50%);
 				height: 1.5px;
 				background: #ffffff;
+				z-index: 50; /* Below scroll indicator */
 			}
 			.ruler-mark.short {
 				width: 12px;
@@ -322,6 +323,30 @@ const { Content } = await render(homepage);
 			.ruler-mark.long {
 				width: 20px;
 				height: 3px;
+			}
+			
+			/* Enable clicks for major marks with navigation */
+			.ruler-mark.clickable-mark {
+				pointer-events: auto !important;
+				cursor: pointer !important;
+				transition: all 0.2s ease;
+				z-index: 100 !important; /* Above regular marks but below scroll indicator */
+				position: absolute !important; /* Ensure proper positioning */
+			}
+			
+			.ruler-mark.clickable-mark:hover {
+				transform: translateX(-50%) scale(1.2) !important;
+				box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+			}
+			
+			.ruler-mark.clickable-mark:active {
+				transform: translateX(-50%) scale(1.1) !important;
+			}
+			
+			/* Debug styling to make clickable marks more visible */
+			.ruler-mark.clickable-mark {
+				border: 1px solid rgba(255, 255, 255, 0.3);
+				background-color: #ffffff !important;
 			}
 
 			.scroll-indicator {
@@ -334,6 +359,7 @@ const { Content } = await render(homepage);
 				border-radius: 2px;
 				box-shadow: 0 0 8px rgba(255, 68, 68, 0.5);
 				transition: top 0.1s ease-out;
+				z-index: 200; /* Above all ruler marks */
 			}
 
 			/* Unified Master Background */

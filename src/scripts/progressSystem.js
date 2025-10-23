@@ -15,7 +15,8 @@
  */
 const PROGRESS_CONFIG = {
 	// Progress calculation
-	targetViewportPosition: 0.8, // Progress hits 100% when last panel is at 80% of viewport
+	scrollbarTopPosition: 0.05, // Scrollbar starts at 5vh (5% of viewport height)
+	targetViewportPosition: 0.05, // Progress hits 100% when last panel top reaches scrollbar top
 	
 	// Animation settings
 	circumference: 565.48, // Full circle circumference (2 * π * 90)
@@ -28,7 +29,7 @@ const PROGRESS_CONFIG = {
 
 /**
  * Calculate smooth progress from hero section through all content panels
- * Progress is based on the journey from hero title to the last small panel
+ * Progress reaches 100% when the final content panel top reaches scrollbar top (5vh from viewport top)
  * 
  * @param {number} viewportHeight - Current viewport height
  * @returns {Object} Progress data including smoothProgress value and last panel reference
@@ -50,16 +51,16 @@ function calculateContentProgress(viewportHeight) {
 		const lastRect = lastPanel.getBoundingClientRect();
 		
 		// Journey starts when we begin scrolling away from hero (hero top reaches viewport top)
-		// Journey ends when LAST panel top is at configured viewport position
+		// Journey ends when LAST panel top reaches scrollbar top position (5vh from viewport top)
 		const journeyStart = heroRect.top; // Hero top at viewport top = journey starts
-		const targetPosition = viewportHeight * PROGRESS_CONFIG.targetViewportPosition;
-		const journeyEnd = lastRect.top - targetPosition; // Last panel at target position = 100% complete
+		const targetPosition = viewportHeight * PROGRESS_CONFIG.targetViewportPosition; // 5% = scrollbar top
+		const journeyEnd = lastRect.top - targetPosition; // Last panel top at scrollbar top = 100% complete
 		
 		// Progress from 0 to 1 based on this full content journey
 		if (journeyStart >= 0) {
 			smoothProgress = 0; // Still in hero section
 		} else if (journeyEnd <= 0) {
-			smoothProgress = 1; // Last panel at target viewport position
+			smoothProgress = 1; // Last panel top has reached scrollbar top position
 		} else {
 			// Linear interpolation through the entire content journey
 			const totalJourneyDistance = Math.abs(journeyStart) + journeyEnd;
