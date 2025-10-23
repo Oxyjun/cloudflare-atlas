@@ -15,6 +15,45 @@ const { Content } = await render(homepage);
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
+		<!-- Fixed Atlas Logo Easter Egg -->
+		<div class="atlas-logo">
+			<!-- Progress Ring -->
+			<svg class="progress-ring" viewBox="0 0 200 200">
+				<!-- Background ring -->
+				<circle
+					cx="100"
+					cy="100"
+					r="90"
+					fill="none"
+					stroke="#e6e6e6"
+					stroke-width="4"
+					stroke-opacity="0.3"></circle>
+				<!-- Single continuous progress ring -->
+				<circle
+					id="progress-circle"
+					cx="100"
+					cy="100"
+					r="90"
+					fill="none"
+					stroke="#ffffff"
+					stroke-width="4"
+					stroke-opacity="0.5"
+					stroke-dasharray="565.48"
+					stroke-dashoffset="565.48"
+					transform="rotate(-90 100 100)"></circle>
+			</svg>
+			<img
+				src="/atlas-compass-outer.svg"
+				alt="Atlas Compass Outer"
+				class="compass-outer"
+			/>
+			<img
+				src="/atlas-compass-inner.svg"
+				alt="Atlas Book Inner"
+				class="compass-inner"
+			/>
+		</div>
+
 		<!-- Unified Background -->
 		<div class="master-background"></div>
 
@@ -117,43 +156,7 @@ const { Content } = await render(homepage);
 				<!-- Right column: Hero image -->
 				<div class="image-column">
 					<div class="hero-image">
-						<div class="atlas-logo">
-							<!-- Progress Ring -->
-							<svg class="progress-ring" viewBox="0 0 200 200">
-								<!-- Background ring -->
-								<circle
-									cx="100"
-									cy="100"
-									r="90"
-									fill="none"
-									stroke="#e6e6e6"
-									stroke-width="4"
-									stroke-opacity="0.3"></circle>
-								<!-- Single continuous progress ring -->
-								<circle
-									id="progress-circle"
-									cx="100"
-									cy="100"
-									r="90"
-									fill="none"
-									stroke="#ffffff"
-									stroke-width="4"
-									stroke-opacity="0.5"
-									stroke-dasharray="565.48"
-									stroke-dashoffset="565.48"
-									transform="rotate(-90 100 100)"></circle>
-							</svg>
-							<img
-								src="/atlas-compass-outer.svg"
-								alt="Atlas Compass Outer"
-								class="compass-outer"
-							/>
-							<img
-								src="/atlas-compass-inner.svg"
-								alt="Atlas Book Inner"
-								class="compass-inner"
-							/>
-						</div>
+						<!-- Hero image content can go here if needed -->
 					</div>
 				</div>
 			</div>
@@ -437,24 +440,34 @@ const { Content } = await render(homepage);
 			}
 
 			.atlas-logo {
-				position: relative;
+				position: fixed !important;
+				top: 2rem !important;
+				right: 2rem !important;
+				width: 80px;
+				height: 80px;
+				z-index: 1000;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				width: 100%;
-				max-width: 80vw;
+				transition: transform 0.3s ease;
+				cursor: pointer;
+				transform: none !important; /* Prevent any scroll-based transforms */
+			}
+			
+			.atlas-logo:hover {
+				transform: scale(1.1) !important; /* Override the transform: none for hover */
 			}
 
 			.compass-outer {
-				width: clamp(20vw, 40vw, 35vw);
-				height: auto;
+				width: 60px;
+				height: 60px;
 				transform-origin: center center;
 			}
 
 			.compass-inner {
 				position: absolute;
-				width: clamp(6vw, 12vw, 10.5vw);
-				height: auto;
+				width: 18px;
+				height: 18px;
 				z-index: 2;
 			}
 
@@ -463,8 +476,8 @@ const { Content } = await render(homepage);
 				top: 50%;
 				left: 50%;
 				transform: translate(-50%, -50%);
-				width: clamp(24vw, 48vw, 42vw);
-				height: clamp(24vw, 48vw, 42vw);
+				width: 72px;
+				height: 72px;
 				z-index: 3;
 				pointer-events: none;
 			}
