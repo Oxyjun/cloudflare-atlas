@@ -18,16 +18,16 @@ const SCROLL_BEHAVIOR_CONFIG = {
 	// Movement triggers
 	progressCompleteThreshold: 1, // Progress must be 100% before movement starts
 	movementStartThreshold: 0, // Panel position threshold for movement start
-	
+
 	// Animation settings
 	movementMultiplier: 1, // Multiplier for scroll offset calculation
-	
+
 	// Elements to move
 	elementsToMove: [
 		'.hero-image',      // Compass logo and image
 		'.master-background' // Background gradient
 	],
-	
+
 	// Reset position
 	resetPosition: 'translateY(0px)'
 };
@@ -41,7 +41,7 @@ function calculateScrollData() {
 	const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
 	const scrollProgress = Math.min(1, Math.max(0, scrollPosition / documentHeight));
 	const viewportHeight = window.innerHeight;
-	
+
 	return {
 		scrollPosition,
 		documentHeight,
@@ -59,27 +59,27 @@ function handleLogoMovement(progressData, viewportHeight) {
 	// Get elements to move
 	const heroImage = document.querySelector(".hero-image");
 	const masterBackground = document.querySelector(".master-background");
-	
+
 	if (!progressData.lastPanel || !heroImage || !masterBackground) {
 		return;
 	}
-	
+
 	const rect = progressData.lastPanel.getBoundingClientRect();
 	const panelTop = rect.top;
-	
+
 	// Logo only starts moving AFTER progress ring reaches 100% (last panel at target position)
-	if (progressData.smoothProgress >= SCROLL_BEHAVIOR_CONFIG.progressCompleteThreshold && 
+	if (progressData.smoothProgress >= SCROLL_BEHAVIOR_CONFIG.progressCompleteThreshold &&
 		panelTop <= SCROLL_BEHAVIOR_CONFIG.movementStartThreshold) {
-		
+
 		// Progress ring is complete AND last panel has started moving past viewport top
 		const scrollOffset = Math.abs(panelTop) * SCROLL_BEHAVIOR_CONFIG.movementMultiplier;
-		
+
 		// Move both hero image and background together as one unit
 		heroImage.style.transform = `translateY(-${scrollOffset}px)`;
 		masterBackground.style.transform = `translateY(-${scrollOffset}px)`;
-		
+
 		console.log(`Logo movement active: offset ${scrollOffset}px`);
-		
+
 	} else {
 		// Keep logo fixed until progress ring is complete
 		heroImage.style.transform = SCROLL_BEHAVIOR_CONFIG.resetPosition;
@@ -95,10 +95,10 @@ function handleLogoMovement(progressData, viewportHeight) {
  */
 export function updateScrollBehavior(progressData) {
 	const scrollData = calculateScrollData();
-	
+
 	// Handle logo movement based on progress completion
 	handleLogoMovement(progressData, scrollData.viewportHeight);
-	
+
 	return scrollData;
 }
 
@@ -108,19 +108,19 @@ export function updateScrollBehavior(progressData) {
  */
 export function initializeScrollBehavior() {
 	console.log("Initializing scroll behavior...");
-	
+
 	// Verify required elements exist
 	const heroImage = document.querySelector(".hero-image");
 	const masterBackground = document.querySelector(".master-background");
-	
+
 	if (!heroImage) {
 		console.error("Hero image element not found - check HTML structure");
 	}
-	
+
 	if (!masterBackground) {
 		console.error("Master background element not found - check HTML structure");
 	}
-	
+
 	console.log("Scroll behavior initialized successfully");
 }
 

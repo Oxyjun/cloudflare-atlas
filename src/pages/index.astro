@@ -171,7 +171,7 @@ const { Content } = await render(homepage);
 			</section>
 		</div>
 
-<!--
+		<!--
 	🌟 CLOUDFLARE ATLAS - COMPONENT GUIDE 🌟
 	
 	This is the main index page that coordinates all components. To modify different
@@ -327,7 +327,7 @@ const { Content } = await render(homepage);
 				width: 20px;
 				height: 3px;
 			}
-			
+
 			/* Enable clicks for major marks with navigation */
 			.ruler-mark.clickable-mark {
 				pointer-events: auto !important;
@@ -336,16 +336,16 @@ const { Content } = await render(homepage);
 				z-index: 100 !important; /* Above regular marks but below scroll indicator */
 				position: absolute !important; /* Ensure proper positioning */
 			}
-			
+
 			.ruler-mark.clickable-mark:hover {
 				transform: translateX(-50%) scale(1.2) !important;
 				box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
 			}
-			
+
 			.ruler-mark.clickable-mark:active {
 				transform: translateX(-50%) scale(1.1) !important;
 			}
-			
+
 			/* Debug styling to make clickable marks more visible */
 			.ruler-mark.clickable-mark {
 				border: 1px solid rgba(255, 255, 255, 0.3);
@@ -453,9 +453,11 @@ const { Content } = await render(homepage);
 				cursor: pointer;
 				transform: none !important; /* Prevent any scroll-based transforms */
 			}
-			
+
 			.atlas-logo:hover {
-				transform: scale(1.1) !important; /* Override the transform: none for hover */
+				transform: scale(
+					1.1
+				) !important; /* Override the transform: none for hover */
 			}
 
 			.compass-outer {
