@@ -86,69 +86,7 @@ const { Content } = await render(homepage);
 
 					<section class="content-section">
 						<div class="scroll-content grid square-grid">
-							<!-- Devdocs -->
-							<section class="content-panel-small" id="devdocs">
-								<h1>Developer Documentation</h1>
-								<p>Dive into the details about Cloudflare's products.</p>
-								<hr class="panel-divider" />
-								<ul>
-									<li>
-										<a href="https://developers.cloudflare.com/"
-											>Full developer documentation</a
-										>
-									</li>
-									<li>
-										<a href="https://developers.cloudflare.com/directory/"
-											>All products</a
-										>
-									</li>
-								</ul>
-							</section>
-
-							<!-- Blogs -->
-							<section class="content-panel-small" id="blog">
-								<h1>Blogs</h1>
-								<p>
-									Read everything from technical deep-dives powering our
-									technology to new ideas in the future of the internet.
-								</p>
-								<hr class="panel-divider" />
-								<ul>
-									<li>
-										<a href="https://blog.cloudflare.com/">Cloudflare Blog</a>
-									</li>
-								</ul>
-							</section>
-
-							<!-- Research -->
-							<section class="content-panel-small" id="research">
-								<h1>Cloudflare Research</h1>
-								<p>
-									Learn how we are planning to help build a better internet.
-								</p>
-								<hr class="panel-divider" />
-								<ul>
-									<li>
-										<a href="https://research.cloudflare.com/"
-											>Cloudflare Research</a
-										>
-									</li>
-								</ul>
-							</section>
-
-							<!-- University -->
-							<section class="content-panel-small" id="university">
-								<h1>Cloudflare University</h1>
-								<p>Take courses to earn Cloudflare certifications.</p>
-								<hr class="panel-divider" />
-								<ul>
-									<li>
-										<a href="https://university.cloudflare.com/"
-											>Cloudflare University</a
-										>
-									</li>
-								</ul>
-							</section>
+							<Content />
 						</div>
 					</section>
 				</div>
@@ -160,15 +98,6 @@ const { Content } = await render(homepage);
 					</div>
 				</div>
 			</div>
-
-			<!-- All Resources - spans both columns -->
-			<section class="content-panel-large" id="all-resources">
-				<h1>All Resources</h1>
-				<p>
-					Access a comprehensive collection of Cloudflare tools and resources.
-				</p>
-				<hr class="panel-divider" />
-			</section>
 		</div>
 
 		<!--
@@ -224,11 +153,6 @@ const { Content } = await render(homepage);
 		<style>
 			:root {
 				overscroll-behavior: none;
-				--primary-color: #333;
-				--accent-color: #066eb9;
-				--glass-bg: rgba(255, 255, 255, 0.15);
-				--glass-border: rgba(255, 255, 255, 0.2);
-				--glass-divider: rgba(51, 51, 51, 0.4);
 			}
 
 			/* Base & Scrollbars */
@@ -494,128 +418,6 @@ const { Content } = await render(homepage);
 				padding: 2rem;
 				width: 100%;
 				box-sizing: border-box;
-			}
-
-			/* Small Content Panels */
-			.content-panel-small {
-				width: 70%;
-				margin: 75vh 0 0 0;
-				background: var(--glass-bg);
-				backdrop-filter: blur(10px);
-				border: 1px solid var(--glass-border);
-				border-radius: 20px;
-				padding: 2rem;
-				box-sizing: border-box;
-				word-wrap: break-word;
-				opacity: 0.2;
-			}
-			.content-panel-small:first-child {
-				margin-top: 0;
-			}
-
-			/* Large Content Panel */
-			.content-panel-large {
-				position: relative;
-				width: calc(100vw - 300px);
-				margin-left: 150px;
-				margin-right: 150px;
-				margin-top: 75vh;
-				margin-bottom: 75vh;
-				background: var(--glass-bg);
-				backdrop-filter: blur(10px);
-				border: 1px solid var(--glass-border);
-				border-radius: 20px;
-				padding: 2rem;
-				box-sizing: border-box;
-				word-wrap: break-word;
-				opacity: 0.2;
-				z-index: 10;
-			}
-
-			/* Content Panel Elements (applies to both small and large) */
-			.content-panel-small h1,
-			.content-panel-small h2,
-			.content-panel-small p,
-			.content-panel-small a,
-			.content-panel-large h1,
-			.content-panel-large h2,
-			.content-panel-large p,
-			.content-panel-large a {
-				color: var(--primary-color);
-				word-wrap: break-word;
-				max-width: 100%;
-			}
-
-			.content-panel-small h1,
-			.content-panel-large h1 {
-				font-size: clamp(2rem, 5vw, 2.5rem);
-				margin: 0 0 1.5rem 0;
-				font-weight: bold;
-			}
-
-			.content-panel-small h2,
-			.content-panel-large h2 {
-				font-size: clamp(1.5rem, 4vw, 2rem);
-				margin: 2rem 0 1rem 0;
-				font-weight: bold;
-			}
-
-			.content-panel-small p,
-			.content-panel-large p {
-				font-size: clamp(1rem, 3vw, 1.2rem);
-				line-height: 1.6;
-				margin: 0;
-			}
-
-			.content-panel-small ul,
-			.content-panel-large ul {
-				list-style: none;
-				padding: 0;
-				margin: 0.25rem 0 0 0;
-			}
-
-			.content-panel-small li,
-			.content-panel-large li {
-				margin: 0.5rem 0;
-			}
-
-			.content-panel-small a,
-			.content-panel-large a {
-				font-size: clamp(0.9rem, 2.5vw, 1rem);
-				text-decoration: none;
-				transition: color 0.3s ease;
-				line-height: 1.2;
-				display: block;
-				transform: translateX(-2rem);
-				opacity: 0;
-				transition:
-					transform 0.4s ease-out,
-					opacity 0.4s ease-out,
-					color 0.3s ease;
-			}
-
-			.content-panel-small a.animate-in,
-			.content-panel-large a.animate-in {
-				transform: translateX(0);
-				opacity: 1;
-			}
-			.content-panel-small a::before,
-			.content-panel-large a::before {
-				content: "→";
-				margin-right: 0.5rem;
-			}
-			.content-panel-small a:hover,
-			.content-panel-large a:hover {
-				color: #0051c3;
-			}
-
-			.panel-divider {
-				border: none;
-				height: 3px;
-				background: var(--glass-divider);
-				margin: 1.5rem 0 0 0;
-				width: 0%;
-				transition: none;
 			}
 
 			/* Mobile */

@@ -1,0 +1,12 @@
+---
+export interface Props {
+  id?: string;
+  className?: string;
+}
+
+const { id, className = "" } = Astro.props;
+---
+
+<section class={`content-panel-small ${className}`} id={id}>
+  <slot />
+</section>
