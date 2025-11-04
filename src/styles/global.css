@@ -193,7 +193,7 @@ hr {
 /* Small Content Panels */
 .content-panel-small {
 	width: 70%;
-	margin: 75vh 0 0 0;
+	margin: 150vh 0 0 0; /* Increased from 75vh to 150vh to delay content arrival */
 	background: var(--glass-bg);
 	backdrop-filter: blur(10px);
 	border: 1px solid var(--glass-border);
@@ -205,13 +205,13 @@ hr {
 }
 
 .content-panel-small:first-child {
-	margin-top: 0;
+	margin-top: 150vh; /* Override to match other panels - removed margin-top: 0 */
 }
 
 /* Large Content Panel - Placeholder for document flow */
 .large-panel-placeholder {
 	height: 75vh; /* Creates space in document flow */
-	margin-top: 50vh;
+	margin-top: 100vh; /* Increased from 50vh to 100vh to delay large panels */
 	margin-bottom: 30vh;
 }
 

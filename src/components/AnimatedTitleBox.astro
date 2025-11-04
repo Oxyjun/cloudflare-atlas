@@ -1,0 +1,120 @@
+---
+export interface Props {
+  title: string;
+  subtitle?: string;
+  className?: string;
+}
+
+const { title, subtitle, className = "" } = Astro.props;
+
+// Split title into words for individual animation
+const titleWords = title.split(' ');
+---
+
+<div class={`animated-title-box ${className}`} id="animated-title-box">
+  <div class="title-content">
+    <div class="hero-title">
+      {titleWords.map(word => (
+        <div class="title-word">{word}</div>
+      ))}
+    </div>
+    {subtitle && (
+      <p class="hero-subtitle">{subtitle}</p>
+    )}
+  </div>
+</div>
+
+<style>
+  .animated-title-box {
+    /* Initial positioning - center of viewport */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    /* Box styling */
+    background: transparent;
+    border-radius: 20px; /* Match content-panel-small */
+    padding: 2rem 3rem;
+    
+    /* Animation support */
+    transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 200;
+    
+    /* Ensure content stays centered */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Box will grow to fit content */
+    min-width: 300px;
+    max-width: 90vw;
+    
+    /* GPU acceleration */
+    will-change: transform, background-color, box-shadow;
+    backface-visibility: hidden;
+  }
+  
+  .title-content {
+    text-align: center;
+    width: 100%;
+  }
+  
+  .hero-title {
+    margin: 0 0 1rem 0;
+  }
+  
+  .title-word {
+    color: var(--primary-color);
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: bold;
+    line-height: 1.1;
+    display: block;
+    word-wrap: break-word;
+    max-width: 100%;
+  }
+  
+  .hero-subtitle {
+    color: var(--primary-color);
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    margin: 0;
+    font-weight: 300;
+    word-wrap: break-word;
+    max-width: 100%;
+  }
+  
+  /* Animation states */
+  .animated-title-box.boxed {
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  
+  .animated-title-box.moved-to-top {
+    top: 2rem !important;
+    transform: translate(-50%, 0) scale(0.7) !important;
+  }
+  
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .animated-title-box {
+      padding: 1.5rem 2rem;
+      max-width: 95vw;
+    }
+    
+    .title-word {
+      font-size: clamp(2rem, 12vw, 4rem);
+    }
+    
+    .hero-subtitle {
+      font-size: clamp(1rem, 4vw, 1.5rem);
+    }
+    
+    .animated-title-box.moved-to-top {
+      top: 2rem !important;
+      transform: translate(-50%, 0) scale(0.6) !important;
+    }
+  }
+</style>

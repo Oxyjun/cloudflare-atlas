@@ -1,5 +1,6 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
+import AnimatedTitleBox from "../components/AnimatedTitleBox.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import { getCollection, render } from "astro:content";
 
@@ -57,6 +58,12 @@ const { Content } = await render(homepage);
 		<!-- Unified Background -->
 		<div class="master-background"></div>
 
+		<!-- Animated Title Box Component -->
+		<AnimatedTitleBox 
+			title={SITE_TITLE}
+			subtitle={homepage.data.description}
+		/>
+
 		<div class="page-layout">
 			<!-- Left column: Custom scrollbar -->
 			<div class="scrollbar-column">
@@ -74,13 +81,7 @@ const { Content } = await render(homepage);
 				<div class="content-column">
 					<main>
 						<div class="hero-container">
-							<div class="hero-text">
-								<div class="hero-title">
-									<div class="title-word">Cloudflare</div>
-									<div class="title-word">Atlas</div>
-								</div>
-								<p class="hero-subtitle">{homepage.data.description}</p>
-							</div>
+							<!-- Placeholder for hero area - title is now handled by AnimatedTitleBox -->
 						</div>
 					</main>
 
