@@ -143,10 +143,11 @@ function updatePanelLinks(panel, isFullyVisible, isOffScreen) {
  * @param {number} viewportHeight - Current viewport height
  */
 export function updatePanelAnimations(viewportHeight) {
-	// Get all content panels (both small and large)
+	// Get all content panels (small, large, and menu)
 	const smallPanels = document.querySelectorAll(".content-panel-small");
 	const largePanels = document.querySelectorAll(".content-panel-large");
-	const allPanels = [...smallPanels, ...largePanels];
+	const menuPanels = document.querySelectorAll(".content-menu");
+	const allPanels = [...smallPanels, ...largePanels, ...menuPanels];
 
 	// Update animations for each panel
 	allPanels.forEach((panel, index) => {

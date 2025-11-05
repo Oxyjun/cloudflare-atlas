@@ -77,9 +77,9 @@ function animateAllText(selector, splitOptions, animationConfig) {
 export function initializeTextAnimations() {
 	// Initialize text animations silently
 
-	// Animate all paragraphs in both small and large content panels
+	// Animate all paragraphs in small, large, and menu content panels
 	animateAllText(
-		".content-panel-small p, .content-panel-large p",
+		".content-panel-small p, .content-panel-large p, .content-menu p",
 		{ words: { wrap: "clip" } },
 		{
 			y: TEXT_ANIMATION_CONFIG.keyframes,

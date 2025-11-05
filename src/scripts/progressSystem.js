@@ -37,12 +37,14 @@ const PROGRESS_CONFIG = {
 function calculateContentProgress(viewportHeight) {
 	const heroSection = document.querySelector("main");
 	const smallPanels = document.querySelectorAll(".content-panel-small");
+	const menuPanels = document.querySelectorAll(".content-menu");
+	const allContentPanels = [...smallPanels, ...menuPanels];
 	let smoothProgress = 0;
 	let lastPanel = null;
 
-	// Dynamically find the last small panel (works with any number of panels)
-	if (smallPanels.length > 0) {
-		lastPanel = smallPanels[smallPanels.length - 1];
+	// Dynamically find the last content panel (works with any number of panels)
+	if (allContentPanels.length > 0) {
+		lastPanel = allContentPanels[allContentPanels.length - 1];
 		// Progress tracking initialized
 	}
 
