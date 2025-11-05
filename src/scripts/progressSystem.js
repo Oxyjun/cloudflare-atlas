@@ -43,7 +43,7 @@ function calculateContentProgress(viewportHeight) {
 	// Dynamically find the last small panel (works with any number of panels)
 	if (smallPanels.length > 0) {
 		lastPanel = smallPanels[smallPanels.length - 1];
-		console.log(`Progress tracking ${smallPanels.length} content panels, last panel:`, lastPanel.id || 'unnamed');
+		// Progress tracking initialized
 	}
 
 	if (heroSection && lastPanel) {
@@ -128,10 +128,7 @@ export function updateProgressSystem(viewportHeight) {
 	updateProgressRing(progressData.smoothProgress);
 	updateCompassRotation(progressData.smoothProgress);
 
-	// Log progress for debugging (can be removed in production)
-	if (progressData.smoothProgress > 0 && progressData.smoothProgress < 1) {
-		console.log(`Progress: ${Math.round(progressData.smoothProgress * 100)}% through ${progressData.totalPanels} panels`);
-	}
+	// Progress updated silently
 
 	return progressData;
 }
@@ -141,9 +138,9 @@ export function updateProgressSystem(viewportHeight) {
  * Call this function when the page loads
  */
 export function initializeProgressSystem() {
-	console.log("Initializing progress system...");
-
-	// Verify required elements exist
+	// Initialize progress system silently
+	
+	// Verify required elements exist (errors only)
 	const progressCircle = document.getElementById("progress-circle");
 	const compassOuter = document.querySelector(".compass-outer");
 
@@ -154,8 +151,6 @@ export function initializeProgressSystem() {
 	if (!compassOuter) {
 		console.error("Compass outer element not found - check HTML structure");
 	}
-
-	console.log("Progress system initialized successfully");
 }
 
 // Export configuration for external access if needed

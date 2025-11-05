@@ -49,7 +49,10 @@ const SCROLLBAR_CONFIG = {
 	
 	// Timing
 	initDelay: 100, // Delay before creating markings (ms)
-	updateEasing: 0.1 // Scroll indicator easing speed
+	updateEasing: 0.1, // Scroll indicator easing speed
+	
+	// Debug control
+	enableLogging: false // Set to true to enable debug logging
 };
 
 /**
@@ -58,7 +61,7 @@ const SCROLLBAR_CONFIG = {
  */
 function getSectionData() {
 	const sections = document.querySelectorAll(SCROLLBAR_CONFIG.sectionSelector);
-	console.log(`Found ${sections.length} sections on page`);
+	if (SCROLLBAR_CONFIG.enableLogging) console.log(`Found ${sections.length} sections on page`);
 	
 	return Array.from(sections).map((section, index) => {
 		const h1 = section.querySelector('h1');
@@ -351,7 +354,7 @@ function debugClickableMarks() {
  * Call this function when the page loads
  */
 export function initializeScrollbar() {
-	console.log("Initializing section-based custom scrollbar...");
+	// Initialize custom scrollbar silently
 	
 	// Add a small delay to ensure DOM is ready
 	setTimeout(() => {
@@ -362,7 +365,7 @@ export function initializeScrollbar() {
 			debugClickableMarks();
 		}, 100);
 		
-		console.log("Custom scrollbar initialized successfully");
+		// Custom scrollbar initialized
 	}, SCROLLBAR_CONFIG.initDelay);
 }
 

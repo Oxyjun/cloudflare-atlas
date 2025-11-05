@@ -132,7 +132,7 @@ function updatePanelLinks(panel, isFullyVisible, isOffScreen) {
 			}, index * PANEL_ANIMATION_CONFIG.linkStaggerDelay);
 		});
 
-		console.log(`Animated ${links.length} links in panel:`, panel.id || 'unnamed');
+		// Links animated successfully
 	}
 }
 
@@ -165,13 +165,7 @@ export function updatePanelAnimations(viewportHeight) {
  * Call this function when the page loads
  */
 export function initializePanelAnimations() {
-	console.log("Initializing panel animations...");
-
-	// Get panel counts for logging
-	const smallPanels = document.querySelectorAll(".content-panel-small");
-	const largePanels = document.querySelectorAll(".content-panel-large");
-
-	console.log(`Panel animations initialized for ${smallPanels.length} small panels and ${largePanels.length} large panels`);
+	// Initialize panel animations silently
 
 	// Initial animation update to set proper states
 	setTimeout(() => {

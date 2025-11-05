@@ -1,0 +1,157 @@
+---
+export interface Props {
+  columns: number;
+  id?: string;
+  className?: string;
+  columnData: Array<{
+    content: string;
+    backgroundColor?: string;
+    backgroundImage?: string;
+    imageOpacity?: number;
+  }>;
+}
+
+const { columns, id, className, columnData } = Astro.props;
+---
+
+<section class={`content-menu ${className || ''}`} id={id}>
+  <div 
+    class="content-menu-grid" 
+    style={`--columns: ${columns}`}
+  >
+    {columnData.map((col, index) => {
+      const backgroundStyle = col.backgroundImage 
+        ? `background-image: url(${col.backgroundImage}); background-size: cover; background-position: center;`
+        : col.backgroundColor 
+        ? `background-color: ${col.backgroundColor};`
+        : '';
+      
+      const overlayOpacity = col.imageOpacity || 0.8;
+
+      return (
+        <div 
+          class="content-menu-item" 
+          style={backgroundStyle}
+        >
+          {col.backgroundImage && (
+            <div 
+              class="content-menu-overlay"
+              style={`background: rgba(255, 255, 255, ${1 - overlayOpacity});`}
+            />
+          )}
+          <div class="content-menu-content" set:html={col.content} />
+        </div>
+      );
+    })}
+  </div>
+</section>
+
+<style>
+  .content-menu {
+    /* Single column architecture - no width constraints! */
+    width: 100%;
+    margin: 150vh 0 0 0; /* Same spacing as content panels */
+    padding: 0;
+    box-sizing: border-box;
+    opacity: 0.2;
+    position: relative;
+    z-index: 50;
+    /* Now works naturally within single-column layout */
+  }
+
+  .content-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns), 1fr);
+    gap: 2rem;
+    width: 100%;
+    max-width: 1400px; /* Reasonable max width for readability */
+    margin: 0 auto; /* Center the grid */
+    padding: 0 2rem; /* Breathing room from edges */
+  }
+
+  .content-menu-item {
+    /* Glass panel styling matching content-panel-small */
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2rem;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .content-menu-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    pointer-events: none;
+  }
+
+  .content-menu-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .content-menu-content h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .content-menu-content p {
+    margin: 0 0 1.5rem 0;
+    line-height: 1.6;
+    color: var(--text-color, #333);
+  }
+
+  .content-menu-content a {
+    color: var(--accent-color, #066eb9);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  .content-menu-content a:hover {
+    border-bottom-color: var(--accent-color, #066eb9);
+  }
+
+  /* Responsive design */
+  @media (max-width: 1200px) {
+    .content-menu-grid {
+      gap: 1.5rem;
+      padding: 0 1.5rem;
+    }
+    
+    .content-menu-item {
+      padding: 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .content-menu-grid {
+      grid-template-columns: 1fr 1fr; /* 2 columns on mobile */
+      gap: 1rem;
+      padding: 0 1rem;
+    }
+    
+    .content-menu-item {
+      padding: 1rem;
+      min-height: 150px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .content-menu-grid {
+      grid-template-columns: 1fr; /* Single column on very small screens */
+    }
+  }
+</style>

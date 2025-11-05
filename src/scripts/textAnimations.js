@@ -75,7 +75,7 @@ function animateAllText(selector, splitOptions, animationConfig) {
  * Call this function when the page loads
  */
 export function initializeTextAnimations() {
-	console.log("Initializing text animations...");
+	// Initialize text animations silently
 
 	// Animate all paragraphs in both small and large content panels
 	animateAllText(
@@ -91,7 +91,7 @@ export function initializeTextAnimations() {
 		}
 	);
 
-	console.log("Text animations initialized successfully");
+	// Text animations initialized
 }
 
 // Export configuration for external access if needed

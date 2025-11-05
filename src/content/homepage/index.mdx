@@ -7,6 +7,46 @@ heroImage: "/atlas-logo-black.svg"
 
 import ContentPanelSmall from "../../components/ContentPanelSmall.astro";
 import ContentPanelLarge from "../../components/ContentPanelLarge.astro";
+import ContentMenu from "../../components/ContentMenu.astro";
+
+<ContentMenu 
+  columns={4}
+  id="featured-services"
+  columnData={[
+    {
+      content: `
+        <h3>🛡️ Security</h3>
+        <p>Protect your applications with enterprise-grade security, DDoS protection, and Web Application Firewall.</p>
+        <a href="https://developers.cloudflare.com/security/">Explore Security</a>
+      `,
+      backgroundColor: 'rgba(239, 68, 68, 0.08)'
+    },
+    {
+      content: `
+        <h3>⚡ Performance</h3>
+        <p>Accelerate your websites and applications with our global CDN and edge computing platform.</p>
+        <a href="https://developers.cloudflare.com/speed/">Boost Performance</a>
+      `,
+      backgroundColor: 'rgba(59, 130, 246, 0.08)'
+    },
+    {
+      content: `
+        <h3>🌐 Network</h3>
+        <p>Connect securely with Zero Trust networking, WARP, and private network solutions.</p>
+        <a href="https://developers.cloudflare.com/cloudflare-one/">Learn Network</a>
+      `,
+      backgroundColor: 'rgba(16, 185, 129, 0.08)'
+    },
+    {
+      content: `
+        <h3>🔧 Developer Tools</h3>
+        <p>Build and deploy with Workers, Pages, and our comprehensive developer platform.</p>
+        <a href="https://developers.cloudflare.com/workers/">Start Building</a>
+      `,
+      backgroundColor: 'rgba(245, 158, 11, 0.08)'
+    }
+  ]}
+/>
 
 <ContentPanelSmall id="devdocs">
 # Developer Documentation

@@ -25,7 +25,7 @@ const TITLE_BOX_CONFIG = {
     makeScrollablePercent: 0.4,  // Make scrollable at 40% scroll (well before content panels)
 
     // Debug
-    enableLogging: true
+    enableLogging: false
 };
 
 /**

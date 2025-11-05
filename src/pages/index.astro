@@ -72,29 +72,19 @@ const { Content } = await render(homepage);
 				</div>
 			</div>
 
-			<!-- Content area that will scroll together -->
-			<div class="scrollable-content">
-				<!-- Middle column: Content -->
-				<div class="content-column">
-					<main>
-						<div class="hero-container">
-							<!-- Placeholder for hero area - title is now handled by AnimatedTitleBox -->
-						</div>
-					</main>
-
-					<section class="content-section">
-						<div class="scroll-content grid square-grid">
-							<Content />
-						</div>
-					</section>
-				</div>
-
-				<!-- Right column: Hero image -->
-				<div class="image-column">
-					<div class="hero-image">
-						<!-- Hero image content can go here if needed -->
+			<!-- Single column content area -->
+			<div class="main-content">
+				<main>
+					<div class="hero-container">
+						<!-- Placeholder for hero area - title is now handled by AnimatedTitleBox -->
 					</div>
-				</div>
+				</main>
+
+				<section class="content-section">
+					<div class="scroll-content">
+						<Content />
+					</div>
+				</section>
 			</div>
 		</div>
 
@@ -192,19 +182,11 @@ const { Content } = await render(homepage);
 				z-index: 1000;
 			}
 
-			.scrollable-content {
-				display: flex;
-				margin-left: 80px;
-			}
-
-			.content-column {
-				flex: 1;
+			.main-content {
+				margin-left: 80px; /* Account for scrollbar */
+				margin-right: 80px; /* Balanced margins */
 				min-height: 100vh;
-				max-width: calc(50vw - 80px);
-				overflow: hidden;
-			}
-			.image-column {
-				flex: 0 0 50vw;
+				width: calc(100vw - 160px); /* Full width minus margins */
 			}
 
 			/* Custom Scrollbar */
