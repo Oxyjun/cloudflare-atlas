@@ -18,14 +18,14 @@ const PANEL_ANIMATION_CONFIG = {
 	minOpacity: 0.2, // Minimum panel opacity
 	maxOpacity: 1.0, // Maximum panel opacity when fully visible
 	opacityRange: 0.8, // Difference between min and max (maxOpacity - minOpacity)
-	
+
 	// Link animation settings
 	linkStaggerDelay: 150, // Delay between each link animation (ms)
 	linkAnimationClass: "animate-in", // CSS class added to animate links
-	
+
 	// Animation timing
 	dividerAnimationSpeed: 100, // Speed multiplier for divider width animation
-	
+
 	// Visibility thresholds
 	visibilityThreshold: 0, // Minimum visibility required to trigger animations
 	resetThreshold: 0 // Threshold for resetting animations when off-screen
@@ -42,20 +42,20 @@ function calculatePanelAnimation(rect, viewportHeight) {
 	const panelBottom = rect.bottom;
 	const panelHeight = rect.height;
 	const viewportMidpoint = viewportHeight / 2;
-	
+
 	let animationProgress = 0;
 	let isFullyVisible = false;
 	let isVisible = false;
-	
+
 	// Check if panel is at least partially visible
-	if (panelBottom > PANEL_ANIMATION_CONFIG.visibilityThreshold && 
+	if (panelBottom > PANEL_ANIMATION_CONFIG.visibilityThreshold &&
 		panelTop < viewportHeight) {
-		
+
 		isVisible = true;
-		
+
 		// Calculate how close the panel center is to viewport midpoint
 		const panelCenter = panelTop + panelHeight / 2;
-		
+
 		if (panelCenter > viewportMidpoint) {
 			// Panel center is below midpoint - gradual fade based on distance
 			const distanceFromMid = panelCenter - viewportMidpoint;
@@ -70,7 +70,7 @@ function calculatePanelAnimation(rect, viewportHeight) {
 			isFullyVisible = true;
 		}
 	}
-	
+
 	return {
 		animationProgress,
 		isFullyVisible,
@@ -85,7 +85,7 @@ function calculatePanelAnimation(rect, viewportHeight) {
  * @param {number} animationProgress - Animation progress (0-1)
  */
 function updatePanelOpacity(panel, animationProgress) {
-	const opacity = PANEL_ANIMATION_CONFIG.minOpacity + 
+	const opacity = PANEL_ANIMATION_CONFIG.minOpacity +
 		(animationProgress * PANEL_ANIMATION_CONFIG.opacityRange);
 	panel.style.opacity = opacity.toString();
 }
@@ -97,7 +97,7 @@ function updatePanelOpacity(panel, animationProgress) {
  */
 function updatePanelDivider(panel, animationProgress) {
 	const divider = panel.querySelector(".panel-divider");
-	
+
 	if (divider) {
 		const lineWidth = animationProgress * PANEL_ANIMATION_CONFIG.dividerAnimationSpeed;
 		divider.style.width = `${lineWidth}%`;
@@ -112,7 +112,7 @@ function updatePanelDivider(panel, animationProgress) {
  */
 function updatePanelLinks(panel, isFullyVisible, isOffScreen) {
 	const links = panel.querySelectorAll("a");
-	
+
 	// Reset animation when panel is off screen
 	if (isOffScreen) {
 		panel.dataset.linksAnimated = "false";
@@ -121,17 +121,17 @@ function updatePanelLinks(panel, isFullyVisible, isOffScreen) {
 		});
 		return;
 	}
-	
+
 	// Trigger staggered link animation when panel is fully visible
 	if (isFullyVisible && panel.dataset.linksAnimated !== "true") {
 		panel.dataset.linksAnimated = "true";
-		
+
 		links.forEach((link, index) => {
 			setTimeout(() => {
 				link.classList.add(PANEL_ANIMATION_CONFIG.linkAnimationClass);
 			}, index * PANEL_ANIMATION_CONFIG.linkStaggerDelay);
 		});
-		
+
 		console.log(`Animated ${links.length} links in panel:`, panel.id || 'unnamed');
 	}
 }
@@ -147,12 +147,12 @@ export function updatePanelAnimations(viewportHeight) {
 	const smallPanels = document.querySelectorAll(".content-panel-small");
 	const largePanels = document.querySelectorAll(".content-panel-large");
 	const allPanels = [...smallPanels, ...largePanels];
-	
+
 	// Update animations for each panel
 	allPanels.forEach((panel, index) => {
 		const rect = panel.getBoundingClientRect();
 		const animationData = calculatePanelAnimation(rect, viewportHeight);
-		
+
 		// Update all panel animations
 		updatePanelOpacity(panel, animationData.animationProgress);
 		updatePanelDivider(panel, animationData.animationProgress);
@@ -166,13 +166,13 @@ export function updatePanelAnimations(viewportHeight) {
  */
 export function initializePanelAnimations() {
 	console.log("Initializing panel animations...");
-	
+
 	// Get panel counts for logging
 	const smallPanels = document.querySelectorAll(".content-panel-small");
 	const largePanels = document.querySelectorAll(".content-panel-large");
-	
+
 	console.log(`Panel animations initialized for ${smallPanels.length} small panels and ${largePanels.length} large panels`);
-	
+
 	// Initial animation update to set proper states
 	setTimeout(() => {
 		updatePanelAnimations(window.innerHeight);

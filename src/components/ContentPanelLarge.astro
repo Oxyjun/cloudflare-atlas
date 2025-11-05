@@ -22,37 +22,44 @@ const { id, className = "" } = Astro.props;
 <script>
   // Position the large panel based on the placeholder's position
   function positionLargePanels() {
-    const placeholders = document.querySelectorAll('.large-panel-placeholder');
-    
-    placeholders.forEach(placeholder => {
-      const panelId = placeholder.getAttribute('data-panel-id');
-      const portal = document.querySelector(`.large-panel-portal[data-panel-id="${panelId}"]`);
-      const panel = portal?.querySelector('.content-panel-large-external');
-      
-      if (portal && portal instanceof HTMLElement && panel && panel instanceof HTMLElement) {
+    const placeholders = document.querySelectorAll(".large-panel-placeholder");
+
+    placeholders.forEach((placeholder) => {
+      const panelId = placeholder.getAttribute("data-panel-id");
+      const portal = document.querySelector(
+        `.large-panel-portal[data-panel-id="${panelId}"]`,
+      );
+      const panel = portal?.querySelector(".content-panel-large-external");
+
+      if (
+        portal &&
+        portal instanceof HTMLElement &&
+        panel &&
+        panel instanceof HTMLElement
+      ) {
         const rect = placeholder.getBoundingClientRect();
         const scrollY = window.scrollY;
-        
+
         // Position the portal
-        portal.style.position = 'absolute';
+        portal.style.position = "absolute";
         portal.style.top = `${rect.top + scrollY}px`;
-        portal.style.left = '150px';
-        portal.style.right = '150px';
-        portal.style.width = 'auto';
-        portal.style.zIndex = '1000';
-        
+        portal.style.left = "150px";
+        portal.style.right = "150px";
+        portal.style.width = "auto";
+        portal.style.zIndex = "1000";
+
         // Animate opacity based on viewport position (matching existing panel system)
         const viewportHeight = window.innerHeight;
         const panelRect = panel.getBoundingClientRect();
         const panelTop = panelRect.top;
         const panelHeight = panelRect.height;
         const panelCenter = panelTop + panelHeight / 2;
-        
+
         // Use similar logic to existing panel animations, but with 80% target
         const targetPosition = viewportHeight * 0.8; // 80% of viewport
-        
+
         let animationProgress = 0;
-        
+
         if (panelTop < viewportHeight && panelRect.bottom > 0) {
           // Panel is visible in viewport
           if (panelTop <= targetPosition) {
@@ -62,21 +69,21 @@ const { id, className = "" } = Astro.props;
             // Panel is approaching target position
             const distanceToTarget = panelTop - targetPosition;
             const fadeRange = viewportHeight * 0.3;
-            animationProgress = Math.max(0, 1 - (distanceToTarget / fadeRange));
+            animationProgress = Math.max(0, 1 - distanceToTarget / fadeRange);
           }
         }
-        
+
         // Apply opacity (matching existing system: 0.2 to 1.0 range)
-        const opacity = 0.2 + (animationProgress * 0.8);
+        const opacity = 0.2 + animationProgress * 0.8;
         panel.style.opacity = opacity.toString();
       }
     });
   }
 
   // Initial positioning
-  document.addEventListener('DOMContentLoaded', positionLargePanels);
-  
+  document.addEventListener("DOMContentLoaded", positionLargePanels);
+
   // Reposition on scroll and resize
-  window.addEventListener('scroll', positionLargePanels);
-  window.addEventListener('resize', positionLargePanels);
+  window.addEventListener("scroll", positionLargePanels);
+  window.addEventListener("resize", positionLargePanels);
 </script>

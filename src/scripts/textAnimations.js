@@ -20,12 +20,12 @@ const TEXT_ANIMATION_CONFIG = {
 	ease: "out(3)",
 	staggerDelay: 50, // Delay between words in same paragraph
 	paragraphDelay: 200, // Delay between different paragraphs
-	
+
 	// Loop settings
 	loop: true,
 	loopDelay: 100,
 	holdDuration: 1500, // How long text stays visible before animating out
-	
+
 	// Animation keyframes
 	keyframes: [
 		{ to: ["100%", "0%"] }, // Slide in
@@ -55,14 +55,14 @@ function forAllInstances(selector, callback) {
  */
 function animateAllText(selector, splitOptions, animationConfig) {
 	const elements = document.querySelectorAll(selector);
-	
+
 	elements.forEach((element, index) => {
 		const { words } = splitText(element, splitOptions);
-		
+
 		// Create independent animation for each paragraph
 		// Add a base delay offset for each paragraph but keep same stagger direction
 		const baseDelay = index * TEXT_ANIMATION_CONFIG.paragraphDelay;
-		
+
 		animate(words, {
 			...animationConfig,
 			delay: (el, i) => baseDelay + i * (animationConfig.delay?.stagger || TEXT_ANIMATION_CONFIG.staggerDelay),
@@ -76,7 +76,7 @@ function animateAllText(selector, splitOptions, animationConfig) {
  */
 export function initializeTextAnimations() {
 	console.log("Initializing text animations...");
-	
+
 	// Animate all paragraphs in both small and large content panels
 	animateAllText(
 		".content-panel-small p, .content-panel-large p",
@@ -90,7 +90,7 @@ export function initializeTextAnimations() {
 			loopDelay: TEXT_ANIMATION_CONFIG.loopDelay,
 		}
 	);
-	
+
 	console.log("Text animations initialized successfully");
 }
 
