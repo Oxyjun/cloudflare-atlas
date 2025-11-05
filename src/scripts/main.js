@@ -67,7 +67,7 @@ function updateScrollEffects() {
 
 	// Update scroll behavior (logo movement, etc.)
 	const scrollData = updateScrollBehavior(progressData);
-	
+
 	// Update title boxing animation
 	updateTitleBoxing();
 
