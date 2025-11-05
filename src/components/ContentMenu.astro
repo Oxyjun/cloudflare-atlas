@@ -12,6 +12,22 @@ export interface Props {
 }
 
 const { columns, id, className, columnData } = Astro.props;
+
+// Simple markdown to HTML converter for basic syntax
+function markdownToHtml(markdown: string): string {
+  return markdown
+    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[h1-6]|<a|<\/p>)(.+)$/gm, '<p>$1</p>')
+    .replace(/<p><h/g, '<h')
+    .replace(/<\/h([1-6])><\/p>/g, '</h$1>')
+    .replace(/<p><a/g, '<a')
+    .replace(/<\/a><\/p>/g, '</a>')
+    .trim();
+}
 ---
 
 <section class={`content-menu ${className || ''}`} id={id}>
@@ -39,7 +55,7 @@ const { columns, id, className, columnData } = Astro.props;
               style={`background: rgba(255, 255, 255, ${1 - overlayOpacity});`}
             />
           )}
-          <div class="content-menu-content" set:html={col.content} />
+          <div class="content-menu-content" set:html={markdownToHtml(col.content)} />
         </div>
       );
     })}
@@ -100,29 +116,7 @@ const { columns, id, className, columnData } = Astro.props;
     z-index: 1;
   }
 
-  .content-menu-content h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
-
-  .content-menu-content p {
-    margin: 0 0 1.5rem 0;
-    line-height: 1.6;
-    color: var(--text-color, #333);
-  }
-
-  .content-menu-content a {
-    color: var(--accent-color, #066eb9);
-    text-decoration: none;
-    font-weight: 500;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.2s ease;
-  }
-
-  .content-menu-content a:hover {
-    border-bottom-color: var(--accent-color, #066eb9);
-  }
+  /* Text styling now handled by global.css - inherits same styles as content panels */
 
   /* Responsive design */
   @media (max-width: 1200px) {

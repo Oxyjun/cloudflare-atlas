@@ -237,7 +237,7 @@ hr {
 	pointer-events: auto;
 }
 
-/* Content Panel Elements (applies to both small and large) */
+/* Content Panel Elements (applies to small, large, and menu) */
 .content-panel-small h1,
 .content-panel-small h2,
 .content-panel-small p,
@@ -245,47 +245,64 @@ hr {
 .content-panel-large-external h1,
 .content-panel-large-external h2,
 .content-panel-large-external p,
-.content-panel-large-external a {
+.content-panel-large-external a,
+.content-menu h1,
+.content-menu h2,
+.content-menu h3,
+.content-menu p,
+.content-menu a {
 	color: var(--primary-color);
 	word-wrap: break-word;
 	max-width: 100%;
 }
 
 .content-panel-small h1,
-.content-panel-large-external h1 {
+.content-panel-large-external h1,
+.content-menu h1 {
 	font-size: clamp(2rem, 5vw, 2.5rem);
 	margin: 0 0 1.5rem 0;
 	font-weight: bold;
 }
 
 .content-panel-small h2,
-.content-panel-large-external h2 {
+.content-panel-large-external h2,
+.content-menu h2 {
 	font-size: clamp(1.5rem, 4vw, 2rem);
 	margin: 2rem 0 1rem 0;
 	font-weight: bold;
 }
 
+.content-menu h3 {
+	font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+	margin: 0 0 1rem 0;
+	font-weight: bold;
+}
+
 .content-panel-small p,
-.content-panel-large-external p {
+.content-panel-large-external p,
+.content-menu p {
 	font-size: clamp(1rem, 3vw, 1.2rem);
 	line-height: 1.6;
 	margin: 0;
 }
 
 .content-panel-small ul,
-.content-panel-large-external ul {
+.content-panel-large-external ul,
+.content-menu ul {
 	list-style: none;
 	padding: 0;
 	margin: 0.25rem 0 0 0;
 }
 
 .content-panel-small li,
-.content-panel-large-external li {
+.content-panel-large-external li,
+.content-menu li {
 	margin: 0.5rem 0;
 }
 
 .content-panel-small a,
-.content-panel-large-external a {
+.content-panel-large-external a,
+.content-menu a {
 	font-size: clamp(0.9rem, 2.5vw, 1rem);
 	text-decoration: none;
 	transition: color 0.3s ease;
@@ -300,19 +317,22 @@ hr {
 }
 
 .content-panel-small a.animate-in,
-.content-panel-large-external a.animate-in {
+.content-panel-large-external a.animate-in,
+.content-menu a.animate-in {
 	transform: translateX(0);
 	opacity: 1;
 }
 
 .content-panel-small a::before,
-.content-panel-large-external a::before {
+.content-panel-large-external a::before,
+.content-menu a::before {
 	content: "→";
 	margin-right: 0.5rem;
 }
 
 .content-panel-small a:hover,
-.content-panel-large-external a:hover {
+.content-panel-large-external a:hover,
+.content-menu a:hover {
 	color: #0051c3;
 }
 
