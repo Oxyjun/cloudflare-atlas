@@ -24,12 +24,15 @@ const PROGRESS_CONFIG = {
 
 	// Easing and transitions
 	updateEasing: "ease-out",
-	transitionDuration: "0.3s"
+	transitionDuration: "0.3s",
+	
+	// Debug
+	enableLogging: true // Set to true to enable progress logging
 };
 
 /**
  * Calculate smooth progress from hero section through all content panels
- * Progress reaches 100% when the final content panel top reaches scrollbar top (5vh from viewport top)
+ * Progress reaches 100% when the final content panel bottom reaches viewport bottom (full page consumed)
  * 
  * @param {number} viewportHeight - Current viewport height
  * @returns {Object} Progress data including smoothProgress value and last panel reference
@@ -37,34 +40,45 @@ const PROGRESS_CONFIG = {
 function calculateContentProgress(viewportHeight) {
 	const heroSection = document.querySelector("main");
 	const smallPanels = document.querySelectorAll(".content-panel-small");
+	const largePanels = document.querySelectorAll(".content-panel-large");
 	const menuPanels = document.querySelectorAll(".content-menu");
-	const allContentPanels = [...smallPanels, ...menuPanels];
+	const allContentPanels = [...smallPanels, ...largePanels, ...menuPanels];
 	let smoothProgress = 0;
 	let lastPanel = null;
 
-	// Dynamically find the last content panel (works with any number of panels)
+	// Find the visually lowest panel based on actual position (not DOM order)
 	if (allContentPanels.length > 0) {
-		lastPanel = allContentPanels[allContentPanels.length - 1];
-		// Progress tracking initialized
+		let lowestBottom = -Infinity;
+		allContentPanels.forEach(panel => {
+			const rect = panel.getBoundingClientRect();
+			const absoluteBottom = rect.bottom + window.pageYOffset;
+			if (absoluteBottom > lowestBottom) {
+				lowestBottom = absoluteBottom;
+				lastPanel = panel;
+			}
+		});
+		// Progress tracking initialized - found visually last panel
+		if (PROGRESS_CONFIG.enableLogging) {
+			console.log(`Progress: Found ${allContentPanels.length} panels, last panel:`, lastPanel.id || lastPanel.className, 'at bottom position:', lowestBottom);
+		}
 	}
 
 	if (heroSection && lastPanel) {
 		const heroRect = heroSection.getBoundingClientRect();
 		const lastRect = lastPanel.getBoundingClientRect();
 
-		// Journey starts when we begin scrolling away from hero (hero top reaches viewport top)
-		// Journey ends when LAST panel top reaches scrollbar top position (5vh from viewport top)
+		// Journey starts when we begin scrolling away from hero (hero top reaches viewport top)  
+		// Journey ends when LAST panel bottom reaches viewport bottom (full page consumed)
 		const journeyStart = heroRect.top; // Hero top at viewport top = journey starts
-		const targetPosition = viewportHeight * PROGRESS_CONFIG.targetViewportPosition; // 5% = scrollbar top
-		const journeyEnd = lastRect.top - targetPosition; // Last panel top at scrollbar top = 100% complete
+		const journeyEnd = lastRect.bottom - viewportHeight; // Last panel bottom at viewport bottom = 100% complete
 
 		// Progress from 0 to 1 based on this full content journey
 		if (journeyStart >= 0) {
 			smoothProgress = 0; // Still in hero section
 		} else if (journeyEnd <= 0) {
-			smoothProgress = 1; // Last panel top has reached scrollbar top position
+			smoothProgress = 1; // Last panel bottom has reached viewport bottom - full page consumed
 		} else {
-			// Linear interpolation through the entire content journey
+			// Linear interpolation through the entire content journey  
 			const totalJourneyDistance = Math.abs(journeyStart) + journeyEnd;
 			const currentJourneyDistance = Math.abs(journeyStart);
 			smoothProgress = Math.max(
