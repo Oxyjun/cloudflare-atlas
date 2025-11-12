@@ -44,6 +44,11 @@ let lastScrollTime = 0;
 let frameCount = 0;
 
 /**
+ * App state tracking
+ */
+let appInitialized = false;
+
+/**
  * Main scroll update function
  * Coordinates all scroll-based updates across different systems
  */
@@ -109,6 +114,16 @@ function handleScroll() {
  * Initialize all systems
  */
 function initializeApp() {
+	// Prevent multiple initialization
+	if (appInitialized) {
+		if (APP_CONFIG.enableLogging) {
+			console.log('🔄 App already initialized, skipping...');
+		}
+		return;
+	}
+
+	appInitialized = true;
+
 	if (APP_CONFIG.enableLogging) {
 		console.log(`🚀 Initializing ${APP_CONFIG.name} v${APP_CONFIG.version}`);
 		console.log('Components loading...');

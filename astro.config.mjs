@@ -9,12 +9,8 @@ import cloudflare from "@astrojs/cloudflare";
 export default defineConfig({
 	site: "https://cloudflare-atlas.pcx-team.workers.dev",
 	integrations: [mdx(), sitemap()],
-	output: "server",
-	adapter: cloudflare({
-		platformProxy: {
-			enabled: true,
-		},
-	}),
+	output: "static",
+	adapter: cloudflare(),
 	vite: {
 		build: {
 			rollupOptions: {

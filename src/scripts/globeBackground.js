@@ -31,7 +31,7 @@ const GLOBE_CONFIG = {
 	zoomCurveExponent: 3, // Higher values = faster initial zoom (exponential curve)
 	
 	// Performance settings
-	enableLogging: true, // Enable for debugging cable issues
+	enableLogging: true, // Temporarily enable for production debugging
 	baseRotateSpeed: 0.1, // Base rotation speed in degrees per frame
 	maxRotateSpeed: 1.0, // Maximum rotation speed when fully scrolled
 	
@@ -51,6 +51,8 @@ let globeContainer = null;
 let isInitialized = false;
 let cableData = null;
 let lastScrollProgress = -1; // Cache to avoid unnecessary updates
+let cablesLoaded = false; // Track if cables have been loaded
+let initializationInProgress = false; // Prevent duplicate initializations
 
 /**
  * Fetch submarine cable data with multiple proxy fallbacks
@@ -112,15 +114,16 @@ async function fetchCableData() {
 		
 	} catch (error) {
 		console.error('❌ Failed to fetch submarine cable data:', error);
-		// Return substantial mock data for testing
-		return {
+		console.log('🎯 Using fallback mock cable data...');
+		// Return comprehensive mock data for testing
+		const mockData = {
 			type: "FeatureCollection",
 			features: [
 				{
 					type: "Feature",
 					geometry: {
 						type: "LineString",
-						coordinates: [[-74, 40], [-40, 45], [-0.1, 51.5]] // New York to London via mid-Atlantic
+						coordinates: [[-74, 40], [-60, 45], [-40, 50], [-20, 52], [-0.1, 51.5]] // New York to London
 					},
 					properties: {
 						name: 'TransAtlantic Cable',
@@ -131,7 +134,7 @@ async function fetchCableData() {
 					type: "Feature",
 					geometry: {
 						type: "LineString",
-						coordinates: [[-118, 34], [-150, 25], [139, 35]] // LA to Tokyo via Pacific
+						coordinates: [[-118, 34], [-140, 25], [-160, 20], [-180, 25], [160, 30], [139, 35]] // LA to Tokyo
 					},
 					properties: {
 						name: 'TransPacific Cable',
@@ -142,15 +145,40 @@ async function fetchCableData() {
 					type: "Feature",
 					geometry: {
 						type: "LineString",
-						coordinates: [[0, 52], [20, 55], [30, 60]] // Europe to Scandinavia
+						coordinates: [[0, 52], [10, 54], [20, 55], [30, 60]] // Europe to Scandinavia
 					},
 					properties: {
 						name: 'European Cable',
 						color: '#00ff88'
 					}
+				},
+				{
+					type: "Feature",
+					geometry: {
+						type: "LineString",
+						coordinates: [[139, 35], [130, 25], [120, 15], [110, 5], [103, 1]] // Japan to Singapore
+					},
+					properties: {
+						name: 'Asia Cable',
+						color: '#ffaa00'
+					}
+				},
+				{
+					type: "Feature",
+					geometry: {
+						type: "LineString",
+						coordinates: [[-74, 40], [-80, 30], [-85, 20], [-90, 10], [-85, -10], [-70, -30]] // US to South America
+					},
+					properties: {
+						name: 'Americas Cable',
+						color: '#aa00ff'
+					}
 				}
 			]
 		};
+		
+		console.log(`📊 Mock data created with ${mockData.features.length} cable features`);
+		return mockData;
 	}
 }
 
@@ -160,7 +188,17 @@ async function fetchCableData() {
 function processCableData(cablesGeo) {
 	let cablePaths = [];
 	
-	console.log('Processing cable data:', cablesGeo);
+	console.log('🔄 Processing cable data:', cablesGeo);
+	
+	if (!cablesGeo) {
+		console.error('❌ No cable data provided to processCableData');
+		return [];
+	}
+	
+	if (!cablesGeo.features || !Array.isArray(cablesGeo.features)) {
+		console.error('❌ Cable data missing features array:', cablesGeo);
+		return [];
+	}
 	
 	if (cablesGeo && cablesGeo.features) {
 		cablesGeo.features.forEach(({ geometry, properties }, index) => {
@@ -260,31 +298,112 @@ function updateGlobeScroll(scrollProgress) {
 }
 
 /**
+ * Load cable data asynchronously (non-blocking)
+ */
+async function loadCableDataAsync(globeInstance) {
+	// Prevent duplicate loading
+	if (cablesLoaded) {
+		if (GLOBE_CONFIG.enableLogging) {
+			console.log('🔄 Cables already loaded, skipping...');
+		}
+		return;
+	}
+
+	try {
+		if (GLOBE_CONFIG.enableLogging) {
+			console.log('🌊 Loading submarine cable data...');
+		}
+
+		cableData = await fetchCableData();
+		console.log('🔄 Fetched cable data:', cableData);
+		
+		const cablePaths = processCableData(cableData);
+		console.log('🔄 Processed cable paths:', cablePaths);
+
+		if (cablePaths.length === 0) {
+			console.warn('⚠️  No cable paths to display');
+			return;
+		}
+
+		// Configure cable paths with enhanced visibility
+		console.log('🎯 Applying cable paths to globe...');
+		globeInstance
+			.pathsData(cablePaths)
+			.pathPoints('coords')
+			.pathPointLat(p => p[1])
+			.pathPointLng(p => p[0])
+			.pathColor(path => path.properties.color)
+			.pathLabel(path => path.properties.name)
+			.pathStroke(1.5) // Thicker lines for better visibility
+			.pathDashLength(GLOBE_CONFIG.pathDashLength)
+			.pathDashGap(GLOBE_CONFIG.pathDashGap)
+			.pathDashAnimateTime(GLOBE_CONFIG.pathDashAnimateTime)
+			.pathTransitionDuration(1000) // Smooth path appearance
+			.pathDashInitialGap(() => Math.random()); // Randomize initial dash positions
+
+		cablesLoaded = true; // Mark as loaded
+
+		if (GLOBE_CONFIG.enableLogging) {
+			console.log(`✅ Cable data loaded and configured: ${cablePaths.length} paths`);
+		}
+
+	} catch (error) {
+		console.warn('⚠️  Cable data loading failed, globe will work without cables:', error.message);
+	}
+}
+
+/**
  * Initialize globe background
  */
 async function initializeGlobeBackground() {
+	// Prevent duplicate initialization
+	if (initializationInProgress || isInitialized) {
+		if (GLOBE_CONFIG.enableLogging) {
+			console.log('🔄 Globe initialization already in progress or completed, skipping...');
+		}
+		return;
+	}
+
+	initializationInProgress = true;
+
 	if (GLOBE_CONFIG.enableLogging) {
 		console.log('🌍 Initializing interactive globe background...');
 	}
 
 	try {
-		// Dynamically import Globe.gl with error handling for production
+		// Dynamically import Globe.gl with multiple strategies for production
 		if (!Globe) {
-			try {
-				const globeModule = await import('globe.gl');
-				Globe = globeModule.default || globeModule;
-				
-				if (!Globe) {
-					throw new Error('Globe.gl failed to load');
+			// Strategy 1: Check if already loaded via CDN
+			if (typeof window !== 'undefined' && window.Globe) {
+				Globe = window.Globe;
+				if (GLOBE_CONFIG.enableLogging) {
+					console.log('✅ Using Globe.gl from CDN');
 				}
-			} catch (importError) {
-				console.error('❌ Failed to import globe.gl:', importError);
-				// Try alternative import method for production
-				if (typeof window !== 'undefined' && window.Globe) {
-					Globe = window.Globe;
-				} else {
-					throw new Error('Globe.gl is not available');
+			} else {
+				// Strategy 2: Dynamic import
+				try {
+					const globeModule = await import('globe.gl');
+					Globe = globeModule.default || globeModule;
+					
+					if (GLOBE_CONFIG.enableLogging) {
+						console.log('✅ Dynamically imported Globe.gl');
+					}
+				} catch (importError) {
+					console.error('❌ Failed to import globe.gl:', importError);
+					
+					// Strategy 3: Wait a bit for CDN to load, then try again
+					await new Promise(resolve => setTimeout(resolve, 1000));
+					if (typeof window !== 'undefined' && window.Globe) {
+						Globe = window.Globe;
+						console.log('✅ Globe.gl loaded via CDN after delay');
+					} else {
+						throw new Error('Globe.gl is not available via any method');
+					}
 				}
+			}
+			
+			if (!Globe) {
+				throw new Error('Globe.gl failed to initialize');
 			}
 		}
 		// Create globe container
@@ -315,34 +434,16 @@ async function initializeGlobeBackground() {
 			throw new Error('Failed to create globe instance');
 		}
 
-		// Load and process submarine cable data
-		if (GLOBE_CONFIG.enableLogging) {
-			console.log('🌊 Loading submarine cable data...');
-		}
-
-		cableData = await fetchCableData();
-		const cablePaths = processCableData(cableData);
-
-		// Configure cable paths with enhanced visibility
-		globe
-			.pathsData(cablePaths)
-			.pathPoints('coords')
-			.pathPointLat(p => p[1])
-			.pathPointLng(p => p[0])
-			.pathColor(path => path.properties.color)
-			.pathLabel(path => path.properties.name)
-			.pathStroke(1.5) // Thicker lines for better visibility
-			.pathDashLength(GLOBE_CONFIG.pathDashLength)
-			.pathDashGap(GLOBE_CONFIG.pathDashGap)
-			.pathDashAnimateTime(GLOBE_CONFIG.pathDashAnimateTime)
-			.pathTransitionDuration(1000) // Smooth path appearance
-			.pathDashInitialGap(() => Math.random()); // Randomize initial dash positions
-
+		// Initialize globe first, then load cable data separately
 		isInitialized = true;
+		initializationInProgress = false;
 
 		if (GLOBE_CONFIG.enableLogging) {
-			console.log(`✅ Globe initialized with ${cablePaths.length} cable paths`);
+			console.log('✅ Globe initialized successfully (loading cables separately...)');
 		}
+
+		// Load cable data in background (non-blocking)
+		loadCableDataAsync(globe);
 
 	} catch (error) {
 		console.error('❌ Failed to initialize globe background:', error);
@@ -354,6 +455,8 @@ async function initializeGlobeBackground() {
 		}
 		globe = null;
 		isInitialized = false;
+		initializationInProgress = false;
+		cablesLoaded = false;
 	}
 }
 

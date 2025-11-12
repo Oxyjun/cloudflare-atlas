@@ -1,8 +1,7 @@
 {
-	"name": "cloudflare-atlas-2",
+	"name": "cloudflare-atlas",
 	"compatibility_date": "2025-10-08",
-	"compatibility_flags": ["nodejs_compat"],
-	"main": "./dist/_worker.js/index.js",
+	"main": "./dist/_worker.js",
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS"
