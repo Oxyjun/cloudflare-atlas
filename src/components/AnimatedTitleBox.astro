@@ -65,7 +65,7 @@ const titleWords = title.split(" ");
   }
 
   .title-word {
-    color: var(--primary-color);
+    color: #ffffff;
     font-size: clamp(3rem, 8vw, 6rem);
     font-weight: bold;
     line-height: 1.1;
@@ -75,7 +75,7 @@ const titleWords = title.split(" ");
   }
 
   .hero-subtitle {
-    color: var(--primary-color);
+    color: #ffffff;
     font-size: clamp(1.2rem, 3vw, 2rem);
     margin: 0;
     font-weight: 300;
@@ -85,14 +85,18 @@ const titleWords = title.split(" ");
 
   /* Animation states */
   .animated-title-box.boxing {
-    /* Progressive white fill - controlled by --fill-opacity CSS variable */
-    background: rgba(255, 255, 255, var(--fill-opacity, 0));
+    /* Progressive glass fill - controlled by --fill-opacity CSS variable */
+    background: rgba(255, 255, 255, calc(var(--fill-opacity, 0) * 0.15));
+    backdrop-filter: blur(calc(var(--fill-opacity, 0) * 10px));
+    border: 1px solid rgba(255, 255, 255, calc(var(--fill-opacity, 0) * 0.2));
     box-shadow: 0 4px 20px rgba(0, 0, 0, calc(var(--fill-opacity, 0) * 0.1));
   }
 
   .animated-title-box.boxed {
-    /* Complete white fill */
-    background: #ffffff;
+    /* Complete glass fill - same as content panels */
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 
