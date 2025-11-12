@@ -26,7 +26,7 @@ const { Content } = await render(homepage);
 					cy="100"
 					r="90"
 					fill="none"
-					stroke="#e6e6e6"
+					stroke="#ffffff"
 					stroke-width="4"
 					stroke-opacity="0.3"></circle>
 				<!-- Single continuous progress ring -->
@@ -38,7 +38,7 @@ const { Content } = await render(homepage);
 					fill="none"
 					stroke="#ffffff"
 					stroke-width="4"
-					stroke-opacity="0.5"
+					stroke-opacity="0.8"
 					stroke-dasharray="565.48"
 					stroke-dashoffset="565.48"
 					transform="rotate(-90 100 100)"></circle>
@@ -161,7 +161,7 @@ const { Content } = await render(homepage);
 				padding: 0;
 				min-height: 100vh;
 				overflow-x: hidden;
-				background: #bbdefb; /* Fallback color matching gradient end */
+				background: #3E74FF; /* Fallback color matching gradient end */
 			}
 
 			/* Layout */
@@ -275,8 +275,8 @@ const { Content } = await render(homepage);
 				top: 0;
 				left: 0;
 				width: 100vw;
-				height: 300vh; /* Extended to cover more scroll area */
-				background: linear-gradient(to bottom, var(--accent-color), #bbdefb);
+				height: 100vh;
+				background: #000000; /* Initial color, will be updated by JavaScript */
 				z-index: -1;
 			}
 
@@ -306,7 +306,7 @@ const { Content } = await render(homepage);
 
 			.title-word,
 			.hero-subtitle {
-				color: var(--primary-color);
+				color: #ffffff;
 				word-wrap: break-word;
 				max-width: 100%;
 			}
@@ -368,6 +368,7 @@ const { Content } = await render(homepage);
 				width: 60px;
 				height: 60px;
 				transform-origin: center center;
+				filter: brightness(0) invert(1);
 			}
 
 			.compass-inner {
@@ -375,6 +376,7 @@ const { Content } = await render(homepage);
 				width: 18px;
 				height: 18px;
 				z-index: 2;
+				filter: brightness(0) invert(1);
 			}
 
 			.progress-ring {
@@ -394,7 +396,7 @@ const { Content } = await render(homepage);
 
 			/* Content Panels */
 			.content-section {
-				color: var(--primary-color);
+				color: #ffffff;
 				padding: 2rem;
 				width: 100%;
 				box-sizing: border-box;

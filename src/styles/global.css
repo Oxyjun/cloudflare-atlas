@@ -42,7 +42,7 @@ body {
 	background-size: 100% 600px;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
-	color: rgb(var(--gray-dark));
+	color: #ffffff;
 	font-size: 20px;
 	line-height: 1.7;
 }
@@ -61,7 +61,7 @@ h4,
 h5,
 h6 {
 	margin: 0 0 0.5rem 0;
-	color: rgb(var(--black));
+	color: #ffffff;
 	line-height: 1.2;
 }
 
@@ -251,7 +251,7 @@ hr {
 .content-menu h3,
 .content-menu p,
 .content-menu a {
-	color: var(--primary-color);
+	color: #ffffff;
 	word-wrap: break-word;
 	max-width: 100%;
 }

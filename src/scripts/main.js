@@ -17,6 +17,7 @@ import { initializeProgressSystem, updateProgressSystem } from './progressSystem
 import { initializePanelAnimations, updatePanelAnimations } from './panelAnimations.js';
 import { initializeScrollBehavior, updateScrollBehavior } from './scrollBehavior.js';
 import { initializeTitleBoxing, updateTitleBoxing } from './titleBoxing.js';
+import { initializeBackgroundTransition, updateBackgroundTransition } from './backgroundTransition.js';
 
 /**
  * Main application configuration
@@ -71,6 +72,9 @@ function updateScrollEffects() {
 	// Update title boxing animation
 	updateTitleBoxing();
 
+	// Update dynamic background color based on scroll progress
+	updateBackgroundTransition(actualScrollProgress);
+
 	// Performance logging
 	if (APP_CONFIG.enablePerformanceLogging) {
 		const endTime = performance.now();
@@ -114,6 +118,7 @@ function initializeApp() {
 		initializePanelAnimations();
 		initializeScrollBehavior();
 		initializeTitleBoxing();
+		initializeBackgroundTransition();
 
 		// Set up scroll event listener
 		window.addEventListener("scroll", handleScroll, { passive: true });
