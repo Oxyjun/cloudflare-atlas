@@ -268,10 +268,24 @@ async function initializeGlobeBackground() {
 	}
 
 	try {
-		// Dynamically import Globe.gl
+		// Dynamically import Globe.gl with error handling for production
 		if (!Globe) {
-			const globeModule = await import('globe.gl');
-			Globe = globeModule.default;
+			try {
+				const globeModule = await import('globe.gl');
+				Globe = globeModule.default || globeModule;
+				
+				if (!Globe) {
+					throw new Error('Globe.gl failed to load');
+				}
+			} catch (importError) {
+				console.error('❌ Failed to import globe.gl:', importError);
+				// Try alternative import method for production
+				if (typeof window !== 'undefined' && window.Globe) {
+					Globe = window.Globe;
+				} else {
+					throw new Error('Globe.gl is not available');
+				}
+			}
 		}
 		// Create globe container
 		globeContainer = document.createElement('div');

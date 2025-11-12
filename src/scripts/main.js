@@ -29,7 +29,7 @@ const APP_CONFIG = {
 	initializationDelay: 100, // Delay before starting animations
 
 	// Debug settings
-	enableLogging: true, // Set to false in production
+	enableLogging: true, // Keep enabled for production debugging
 	enablePerformanceLogging: false, // Set to true for performance debugging
 
 	// App metadata

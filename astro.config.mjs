@@ -7,11 +7,28 @@ import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://example.com",
+	site: "https://cloudflare-atlas.pcx-team.workers.dev",
 	integrations: [mdx(), sitemap()],
+	output: "server",
 	adapter: cloudflare({
 		platformProxy: {
 			enabled: true,
 		},
 	}),
+	vite: {
+		build: {
+			rollupOptions: {
+				external: [],
+				output: {
+					inlineDynamicImports: false,
+					manualChunks: undefined,
+				}
+			}
+		},
+		resolve: {
+			alias: {
+				'@': '/src'
+			}
+		}
+	}
 });
