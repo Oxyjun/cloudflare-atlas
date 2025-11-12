@@ -19,6 +19,8 @@
 		"@astrojs/sitemap": "3.4.1",
 		"animejs": "^4.2.2",
 		"astro": "5.10.1",
+		"globe.gl": "^2.45.0",
+		"three": "^0.181.1",
 		"typescript": "5.8.3"
 	},
 	"devDependencies": {

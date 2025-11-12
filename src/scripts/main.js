@@ -18,6 +18,7 @@ import { initializePanelAnimations, updatePanelAnimations } from './panelAnimati
 import { initializeScrollBehavior, updateScrollBehavior } from './scrollBehavior.js';
 import { initializeTitleBoxing, updateTitleBoxing } from './titleBoxing.js';
 import { initializeBackgroundTransition, updateBackgroundTransition } from './backgroundTransition.js';
+import { initializeGlobeBackground, updateGlobeScroll } from './globeBackground.js';
 
 /**
  * Main application configuration
@@ -75,6 +76,9 @@ function updateScrollEffects() {
 	// Update dynamic background color based on scroll progress
 	updateBackgroundTransition(actualScrollProgress);
 
+	// Update globe background based on scroll progress
+	updateGlobeScroll(actualScrollProgress);
+
 	// Performance logging
 	if (APP_CONFIG.enablePerformanceLogging) {
 		const endTime = performance.now();
@@ -119,6 +123,7 @@ function initializeApp() {
 		initializeScrollBehavior();
 		initializeTitleBoxing();
 		initializeBackgroundTransition();
+		initializeGlobeBackground();
 
 		// Set up scroll event listener
 		window.addEventListener("scroll", handleScroll, { passive: true });

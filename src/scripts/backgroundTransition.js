@@ -90,10 +90,17 @@ function calculateBackgroundColor(scrollProgress) {
 function updateBackgroundTransition(scrollProgress) {
 	const backgroundColor = calculateBackgroundColor(scrollProgress);
 	
-	// Apply to the master background element
+	// Apply to the master background element with transparency to show globe
 	const backgroundElement = document.querySelector('.master-background');
 	if (backgroundElement) {
-		backgroundElement.style.background = backgroundColor;
+		// Make background semi-transparent to allow globe to show through
+		const rgbMatch = backgroundColor.match(/rgb\((\d+), (\d+), (\d+)\)/);
+		if (rgbMatch) {
+			const [, r, g, b] = rgbMatch;
+			backgroundElement.style.background = `rgba(${r}, ${g}, ${b}, 0.3)`;
+		} else {
+			backgroundElement.style.background = backgroundColor;
+		}
 	}
 	
 	// Also update body fallback color
