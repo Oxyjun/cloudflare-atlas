@@ -90,21 +90,28 @@ function calculateBackgroundColor(scrollProgress) {
 function updateBackgroundTransition(scrollProgress) {
 	const backgroundColor = calculateBackgroundColor(scrollProgress);
 	
-	// Apply to the master background element with transparency to show globe
+	// Apply to the master background element with minimal transparency to show globe
 	const backgroundElement = document.querySelector('.master-background');
 	if (backgroundElement) {
-		// Make background semi-transparent to allow globe to show through
+		// Make background very transparent to allow globe to show through prominently
 		const rgbMatch = backgroundColor.match(/rgb\((\d+), (\d+), (\d+)\)/);
 		if (rgbMatch) {
 			const [, r, g, b] = rgbMatch;
-			backgroundElement.style.background = `rgba(${r}, ${g}, ${b}, 0.3)`;
+			// Use much lower opacity (5%) so globe is clearly visible
+			backgroundElement.style.background = `rgba(${r}, ${g}, ${b}, 0.05)`;
 		} else {
 			backgroundElement.style.background = backgroundColor;
 		}
 	}
 	
-	// Also update body fallback color
-	document.body.style.backgroundColor = backgroundColor;
+	// Update body with very transparent color to show globe
+	const rgbMatch2 = backgroundColor.match(/rgb\((\d+), (\d+), (\d+)\)/);
+	if (rgbMatch2) {
+		const [, r, g, b] = rgbMatch2;
+		document.body.style.backgroundColor = `rgba(${r}, ${g}, ${b}, 0.05)`;
+	} else {
+		document.body.style.backgroundColor = 'transparent';
+	}
 	
 	if (BACKGROUND_CONFIG.enableLogging) {
 		console.log(`Background updated: ${backgroundColor} (progress: ${scrollProgress.toFixed(3)})`);

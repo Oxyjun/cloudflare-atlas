@@ -26,50 +26,127 @@ const GLOBE_CONFIG = {
 	pathDashAnimateTime: 15000, // Slower animation for better performance
 	
 	// Camera settings
-	initialAltitude: 2.5,
-	scrollAltitudeRange: [1.8, 3.5], // Min and max altitude based on scroll
+	initialAltitude: 3.5, // Start farther away (smaller globe)
+	scrollAltitudeRange: [0.3, 3.5], // Min (big) and max (small) altitude based on scroll
+	zoomCurveExponent: 3, // Higher values = faster initial zoom (exponential curve)
 	
 	// Performance settings
-	enableLogging: false,
-	autoRotateSpeed: 0.2, // Degrees per frame
+	enableLogging: true, // Enable for debugging cable issues
+	baseRotateSpeed: 0.1, // Base rotation speed in degrees per frame
+	maxRotateSpeed: 1.0, // Maximum rotation speed when fully scrolled
 	
-	// Submarine cable API
-	cableApiUrl: 'https://www.submarinecablemap.com/api/v3/cable/cable-geo.json'
+	// Submarine cable API (using proxy to avoid CORS issues)
+	cableApiUrl: 'https://www.submarinecablemap.com/api/v3/cable/cable-geo.json',
+	// Multiple proxy fallbacks
+	proxyUrls: [
+		'https://http-proxy.vastur.com?url=', // Same as original globe.gl example
+		'https://cors-anywhere.herokuapp.com/', // Popular CORS proxy
+		'https://api.allorigins.win/get?url=', // Our previous attempt
+		'https://corsproxy.io/?url=' // Another fallback
+	]
 };
 
 let globe = null;
 let globeContainer = null;
 let isInitialized = false;
 let cableData = null;
+let lastScrollProgress = -1; // Cache to avoid unnecessary updates
 
 /**
- * Fetch submarine cable data
+ * Fetch submarine cable data with multiple proxy fallbacks
  */
 async function fetchCableData() {
 	try {
-		const response = await fetch(GLOBE_CONFIG.cableApiUrl);
-		if (!response.ok) {
-			// Fallback to CDN proxy if direct access fails
-			const proxyResponse = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(GLOBE_CONFIG.cableApiUrl)}`);
-			const proxyData = await proxyResponse.json();
-			return JSON.parse(proxyData.contents);
+		console.log('🌊 Fetching submarine cable data...');
+		
+		// Try direct access first
+		try {
+			console.log('Trying direct API access...');
+			const response = await fetch(GLOBE_CONFIG.cableApiUrl);
+			if (response.ok) {
+				console.log('✅ Direct API access successful');
+				return await response.json();
+			}
+			throw new Error(`Direct access failed: HTTP ${response.status}`);
+		} catch (directError) {
+			console.log('❌ Direct fetch failed:', directError.message);
 		}
-		return await response.json();
+		
+		// Try each proxy in sequence
+		for (let i = 0; i < GLOBE_CONFIG.proxyUrls.length; i++) {
+			const proxyUrl = GLOBE_CONFIG.proxyUrls[i];
+			try {
+				console.log(`Trying proxy ${i + 1}/${GLOBE_CONFIG.proxyUrls.length}: ${proxyUrl}`);
+				
+				let fullUrl;
+				let response;
+				
+				if (proxyUrl.includes('allorigins.win')) {
+					// AllOrigins format
+					fullUrl = `${proxyUrl}${encodeURIComponent(GLOBE_CONFIG.cableApiUrl)}`;
+					response = await fetch(fullUrl);
+					if (response.ok) {
+						const proxyData = await response.json();
+						console.log('✅ Proxy successful via AllOrigins');
+						return JSON.parse(proxyData.contents);
+					}
+				} else {
+					// Simple proxy format
+					fullUrl = `${proxyUrl}${GLOBE_CONFIG.cableApiUrl}`;
+					response = await fetch(fullUrl);
+					if (response.ok) {
+						console.log(`✅ Proxy successful via ${proxyUrl}`);
+						return await response.json();
+					}
+				}
+				
+				throw new Error(`HTTP ${response.status}`);
+				
+			} catch (proxyError) {
+				console.log(`❌ Proxy ${i + 1} failed:`, proxyError.message);
+				// Continue to next proxy
+			}
+		}
+		
+		throw new Error('All proxy attempts failed');
+		
 	} catch (error) {
-		console.warn('Failed to fetch submarine cable data:', error);
-		// Return mock data for development
+		console.error('❌ Failed to fetch submarine cable data:', error);
+		// Return substantial mock data for testing
 		return {
+			type: "FeatureCollection",
 			features: [
 				{
+					type: "Feature",
 					geometry: {
-						coordinates: [
-							[[-74, 40], [-0.1, 51.5]], // New York to London
-							[[-118, 34], [139, 35]] // Los Angeles to Tokyo
-						]
+						type: "LineString",
+						coordinates: [[-74, 40], [-40, 45], [-0.1, 51.5]] // New York to London via mid-Atlantic
 					},
 					properties: {
-						name: 'Sample Cable',
-						color: '#00ffff'
+						name: 'TransAtlantic Cable',
+						color: '#00aaff'
+					}
+				},
+				{
+					type: "Feature",
+					geometry: {
+						type: "LineString",
+						coordinates: [[-118, 34], [-150, 25], [139, 35]] // LA to Tokyo via Pacific
+					},
+					properties: {
+						name: 'TransPacific Cable',
+						color: '#ff6600'
+					}
+				},
+				{
+					type: "Feature",
+					geometry: {
+						type: "LineString",
+						coordinates: [[0, 52], [20, 55], [30, 60]] // Europe to Scandinavia
+					},
+					properties: {
+						name: 'European Cable',
+						color: '#00ff88'
 					}
 				}
 			]
@@ -78,29 +155,45 @@ async function fetchCableData() {
 }
 
 /**
- * Process cable data into paths format
+ * Process cable data into paths format (matching globe.gl example)
  */
 function processCableData(cablesGeo) {
 	let cablePaths = [];
 	
+	console.log('Processing cable data:', cablesGeo);
+	
 	if (cablesGeo && cablesGeo.features) {
-		cablesGeo.features.forEach(({ geometry, properties }) => {
+		cablesGeo.features.forEach(({ geometry, properties }, index) => {
 			if (geometry && geometry.coordinates) {
-				geometry.coordinates.forEach(coords => {
-					if (coords && coords.length > 1) {
-						cablePaths.push({ 
-							coords, 
-							properties: {
-								name: properties?.name || 'Unknown Cable',
-								color: properties?.color || '#00aaff'
-							}
-						});
-					}
-				});
+				// Handle different geometry types
+				if (geometry.type === 'LineString') {
+					// Single line string
+					cablePaths.push({ 
+						coords: geometry.coordinates, 
+						properties: {
+							name: properties?.name || `Cable ${index + 1}`,
+							color: properties?.color || `hsl(${(index * 137.508) % 360}, 70%, 50%)` // Generate colors
+						}
+					});
+				} else if (geometry.type === 'MultiLineString') {
+					// Multiple line strings
+					geometry.coordinates.forEach((coords, segmentIndex) => {
+						if (coords && coords.length > 1) {
+							cablePaths.push({ 
+								coords, 
+								properties: {
+									name: `${properties?.name || 'Cable'} Segment ${segmentIndex + 1}`,
+									color: properties?.color || `hsl(${(index * 137.508) % 360}, 70%, 50%)`
+								}
+							});
+						}
+					});
+				}
 			}
 		});
 	}
 	
+	console.log(`✨ Processed ${cablePaths.length} cable paths`);
 	return cablePaths;
 }
 
@@ -119,7 +212,7 @@ function createGlobe() {
 		.atmosphereColor('#4080ff')
 		.atmosphereAltitude(0.15);
 
-	// Set initial camera position
+	// Set initial camera position (start with small globe)
 	newGlobe.pointOfView({ altitude: GLOBE_CONFIG.initialAltitude }, 0);
 
 	return newGlobe;
@@ -131,22 +224,38 @@ function createGlobe() {
 function updateGlobeScroll(scrollProgress) {
 	if (!globe || !isInitialized) return;
 
-	// Adjust camera altitude based on scroll
-	const minAltitude = GLOBE_CONFIG.scrollAltitudeRange[0];
-	const maxAltitude = GLOBE_CONFIG.scrollAltitudeRange[1];
-	const altitude = minAltitude + (maxAltitude - minAltitude) * scrollProgress;
-	
-	// Smooth camera update
-	globe.pointOfView({ altitude }, 1000);
+	// Skip update if scroll progress hasn't changed significantly
+	if (Math.abs(scrollProgress - lastScrollProgress) < 0.001) return;
+	lastScrollProgress = scrollProgress;
 
-	// Auto-rotate globe slowly
+	// Apply exponential curve for faster initial zoom
+	// Higher exponent means more dramatic zoom at the beginning
+	const curvedProgress = Math.pow(scrollProgress, 1 / GLOBE_CONFIG.zoomCurveExponent);
+	
+	// Invert progress so globe gets bigger (lower altitude) as we scroll down
+	const invertedProgress = 1 - curvedProgress;
+	
+	// Adjust camera altitude based on scroll (lower altitude = bigger globe)
+	const minAltitude = GLOBE_CONFIG.scrollAltitudeRange[0]; // 0.3 (big globe)
+	const maxAltitude = GLOBE_CONFIG.scrollAltitudeRange[1]; // 3.5 (small globe)
+	const altitude = minAltitude + (maxAltitude - minAltitude) * invertedProgress;
+	
+	// Immediate camera update for fluid 60fps response
+	globe.pointOfView({ altitude }, 0); // No transition delay for smooth scrolling
+
+	// Calculate rotation speed based on scroll progress (faster as we scroll)
+	const rotationSpeed = GLOBE_CONFIG.baseRotateSpeed + 
+		(GLOBE_CONFIG.maxRotateSpeed - GLOBE_CONFIG.baseRotateSpeed) * scrollProgress;
+	
+	// Auto-rotate globe with increasing speed (immediate update)
 	const currentPov = globe.pointOfView();
 	globe.pointOfView({
-		lng: (currentPov.lng + GLOBE_CONFIG.autoRotateSpeed) % 360
+		altitude: altitude, // Apply both altitude and rotation in single call
+		lng: (currentPov.lng + rotationSpeed) % 360
 	}, 0);
 
 	if (GLOBE_CONFIG.enableLogging) {
-		console.log(`Globe updated: altitude ${altitude.toFixed(2)}, scroll ${scrollProgress.toFixed(3)}`);
+		console.log(`Globe updated: altitude ${altitude.toFixed(2)}, rotation speed ${rotationSpeed.toFixed(2)}, scroll ${scrollProgress.toFixed(3)}, curved ${curvedProgress.toFixed(3)}`);
 	}
 }
 
@@ -175,6 +284,7 @@ async function initializeGlobeBackground() {
 			height: 100vh;
 			z-index: -2;
 			pointer-events: none;
+			overflow: hidden;
 		`;
 
 		// Insert after master-background
@@ -199,7 +309,7 @@ async function initializeGlobeBackground() {
 		cableData = await fetchCableData();
 		const cablePaths = processCableData(cableData);
 
-		// Configure cable paths
+		// Configure cable paths with enhanced visibility
 		globe
 			.pathsData(cablePaths)
 			.pathPoints('coords')
@@ -207,10 +317,12 @@ async function initializeGlobeBackground() {
 			.pathPointLng(p => p[0])
 			.pathColor(path => path.properties.color)
 			.pathLabel(path => path.properties.name)
+			.pathStroke(1.5) // Thicker lines for better visibility
 			.pathDashLength(GLOBE_CONFIG.pathDashLength)
 			.pathDashGap(GLOBE_CONFIG.pathDashGap)
 			.pathDashAnimateTime(GLOBE_CONFIG.pathDashAnimateTime)
-			.pathStroke(0.8);
+			.pathTransitionDuration(1000) // Smooth path appearance
+			.pathDashInitialGap(() => Math.random()); // Randomize initial dash positions
 
 		isInitialized = true;
 
